@@ -1,5 +1,8 @@
 package com.whammy.user
 
+import org.springframework.stereotype.Repository
+
+@Repository
 class UserRepository(private val driver: UserDriver): IUserRepository {
     override fun isUserExists(email: String, password: String): Boolean {
         return driver.findUserByEmailAddressAndPassword(email, password) != null

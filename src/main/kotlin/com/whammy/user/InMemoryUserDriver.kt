@@ -1,5 +1,8 @@
 package com.whammy.user
 
+import org.springframework.stereotype.Component
+
+@Component
 class InMemoryUserDriver: UserDriver {
     private val users = mutableListOf(
             UserModel("reader@example.com", "reader", "-"),

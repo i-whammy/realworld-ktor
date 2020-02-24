@@ -1,5 +1,8 @@
 package com.whammy.user
 
+import org.springframework.stereotype.Service
+
+@Service
 class UserUsecase(private val userRepository: IUserRepository) {
     fun login(loginInformation: LoginInformation): User {
         val email = loginInformation.email
