@@ -11,6 +11,6 @@ class UserUsecase(private val userRepository: IUserRepository) {
             val user = userRepository.findUserByEmailAddress(email).refreshToken()
             userRepository.save(user)
             return user
-        } else throw UserNotFoundException("")
+        } else throw LoginFailureException("The user with $email does not exist.")
     }
 }

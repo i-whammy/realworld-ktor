@@ -1,7 +1,6 @@
 package com.whammy.user
 
 import io.mockk.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -43,7 +42,7 @@ class UserUsecaseTest {
 
         every { userRepository.isUserExists(email, password) } returns false
 
-        assertThrows<UserNotFoundException> { usecase.login(loginInformation) }
+        assertThrows<LoginFailureException> { usecase.login(loginInformation) }
 
         verify {
             userRepository.isUserExists(email, password)
