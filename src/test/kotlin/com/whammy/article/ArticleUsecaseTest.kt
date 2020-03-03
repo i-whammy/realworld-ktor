@@ -11,7 +11,7 @@ class ArticleUsecaseTest {
 
     @Test
     fun testGetArticles() {
-        val repository = mockk<ArticleRepository>()
+        val repository = mockk<IArticleRepository>()
         val usecase = ArticleUsecase(repository)
         val articles = Articles(listOf(
             Article("title1", "body1", LocalDateTime.of(2019,1,1,0,0)),
@@ -24,7 +24,7 @@ class ArticleUsecaseTest {
 
         every { repository.getArticles() } returns articles
 
-        assertEquals(expected, usecase.getArticles())
+        assertEquals(expected, usecase.getArticlesOrderedByUpdatedDateTime())
 
         verify {
             repository.getArticles()

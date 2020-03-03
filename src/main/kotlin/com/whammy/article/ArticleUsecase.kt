@@ -1,9 +1,10 @@
 package com.whammy.article
 
-import java.time.LocalDateTime
+import org.springframework.stereotype.Service
 
-class ArticleUsecase(private val repository: ArticleRepository) {
-    fun getArticles(): Articles {
+@Service
+class ArticleUsecase(private val repository: IArticleRepository) {
+    fun getArticlesOrderedByUpdatedDateTime(): Articles {
         return repository.getArticles().sortByUpdatedAt()
     }
 }
