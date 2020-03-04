@@ -15,7 +15,7 @@ public class ArticleController(private val articleUsecase: ArticleUsecase) {
     fun getArticles() : ResponseEntity<ArticlesResponse> {
         return ResponseEntity.ok(
             ArticlesResponse(articleUsecase.getArticlesOrderedByUpdatedDateTime().map {
-                ArticleResponse(it.title, it.body, it.updatedAt)
+                ArticleResponse(it.slug, it.title, it.body, it.updatedAt)
             }))
     }
 }
@@ -24,6 +24,7 @@ data class ArticlesResponse(
     @JsonProperty("articles") val articles: List<ArticleResponse>)
 
 data class ArticleResponse(
+    @JsonProperty("slug") val slug: String,
     @JsonProperty("title") val title: String,
     @JsonProperty("body") val body: String,
     @JsonProperty("updatedAt") val updatedAt: LocalDateTime)
