@@ -26,7 +26,7 @@ class InMemoryArticleDriver: ArticleDriver {
         return articles
     }
 
-    override fun getArticle(slug: String): ArticleModel {
-        return articles.find { it.slug == slug }!!
+    override fun getArticle(slug: String): ArticleModel? {
+        return articles.find { it.slug == slug }
     }
 }

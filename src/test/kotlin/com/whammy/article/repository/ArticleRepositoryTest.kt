@@ -2,12 +2,14 @@ package com.whammy.article.repository
 
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
+import com.whammy.article.exception.ArticleNotFoundException
 import com.whammy.article.repository.ArticleDriver
 import com.whammy.article.repository.ArticleModel
 import com.whammy.article.repository.ArticleRepository
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -62,5 +64,15 @@ class ArticleRepositoryTest {
         every { driver.getArticle("title-1") } returns articleModel
 
         assertEquals(article, repository.getArticle("title-1"))
+    }
+
+    @Test
+    fun testFailedToGetArticle() {
+        val driver = mockk<ArticleDriver>()
+        val repository = ArticleRepository(driver)
+
+        every { driver.getArticle("no-article") } returns null
+
+        assertThrows<ArticleNotFoundException> { repository.getArticle("no-article") }
     }
 }

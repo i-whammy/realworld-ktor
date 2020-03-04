@@ -2,12 +2,14 @@ package com.whammy.article.usecase
 
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
+import com.whammy.article.exception.ArticleNotFoundException
 import com.whammy.article.usecase.ArticleUsecase
 import com.whammy.article.usecase.IArticleRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -79,6 +81,12 @@ class ArticleUsecaseTest {
 
     @Test
     fun testFailedToGetArticle() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+
+        every { repository.getArticle("no-article") } throws ArticleNotFoundException("")
+
+        assertThrows<ArticleNotFoundException> { usecase.getArticle("no-article") }
+
+        verify { repository.getArticle("no-article") }    }
 }
