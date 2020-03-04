@@ -30,4 +30,22 @@ class ArticleUsecaseTest {
             repository.getArticles()
         }
     }
+
+    @Test
+    fun testGetArticle() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+        val article = Article("title-1", "title1", "body", LocalDateTime.of(2020,1,1,0,0))
+
+        every { repository.getArticle("title-1") } returns article
+
+        assertEquals(article, usecase.getArticle("title-1"))
+
+        verify { repository.getArticle("title-1") }
+    }
+
+    @Test
+    fun testFailedToGetArticle() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

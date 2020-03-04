@@ -3,6 +3,7 @@ package com.whammy.article
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import java.time.LocalDateTime
@@ -17,6 +18,13 @@ public class ArticleController(private val articleUsecase: ArticleUsecase) {
             ArticlesResponse(articleUsecase.getArticlesOrderedByUpdatedDateTime().map {
                 ArticleResponse(it.slug, it.title, it.body, it.updatedAt)
             }))
+    }
+
+    @RequestMapping("/{slug}", method = [RequestMethod.GET])
+    fun getArticle(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
+        return ResponseEntity.ok(
+            articleUsecase.getArticle(slug).let { ArticleResponse(it.slug, it.title, it.body, it.updatedAt) }
+        )
     }
 }
 

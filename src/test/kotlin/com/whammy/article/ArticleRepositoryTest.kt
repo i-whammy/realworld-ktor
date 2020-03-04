@@ -23,4 +23,17 @@ class ArticleRepositoryTest {
 
         assertEquals(articles, repository.getArticles())
     }
+
+    @Test
+    fun testGetArticle() {
+        val driver = mockk<ArticleDriver>()
+        val repository = ArticleRepository(driver)
+        val article = Article("title-1", "title1", "body", LocalDateTime.of(2020,1,1,0,0))
+
+        val articleModel = ArticleModel("title-1", "title1", "body", LocalDateTime.of(2020,1,1,0,0))
+
+        every { driver.getArticle("title-1") } returns articleModel
+
+        assertEquals(article, repository.getArticle("title-1"))
+    }
 }
