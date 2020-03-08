@@ -2,10 +2,12 @@ package com.whammy.article.usecase
 
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
+import com.whammy.article.domain.Comment
 import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
@@ -91,5 +93,17 @@ class ArticleUsecaseTest {
 
         assertThrows<ArticleNotFoundException> { usecase.getArticle("no-article") }
 
-        verify { repository.getArticle("no-article") }    }
+        verify { repository.getArticle("no-article") }
+    }
+
+    @Test
+    fun testGetCommentsOfArticle() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+        val comments = listOf<Comment>()
+
+        every { repository.getCommentsOfArticle("slug") } returns comments
+        assertEquals(comments, usecase.getCommentsOfArticle("slug"))
+        verify { repository.getCommentsOfArticle("slug") }
+    }
 }

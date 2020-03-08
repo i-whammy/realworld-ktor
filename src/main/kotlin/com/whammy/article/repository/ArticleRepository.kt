@@ -2,6 +2,7 @@ package com.whammy.article.repository
 
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
+import com.whammy.article.domain.Comment
 import com.whammy.article.exception.ArticleNotFoundException
 import com.whammy.article.usecase.IArticleRepository
 import org.springframework.stereotype.Repository
@@ -24,5 +25,12 @@ class ArticleRepository(private val driver: ArticleDriver):
     override fun getArticle(slug: String): Article {
         return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated, emptyList()) }
             ?: throw ArticleNotFoundException("Article not found. slug = $slug")
+    }
+
+    override fun getCommentsOfArticle(slug: String): List<Comment> {
+        val article = driver.getArticle(slug) ?: throw ArticleNotFoundException("Article not found. slug = $slug")
+        return driver.getCommentsOfArticle(slug).map {
+            Comment(it.id, it.body, it.createdAt, it.updatedAt)
+        }
     }
 }

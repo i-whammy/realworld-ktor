@@ -11,24 +11,23 @@ import java.time.LocalDateTime
 
 @Controller
 @RequestMapping("/api/articles")
-public class ArticleController(private val articleUsecase: ArticleUsecase) {
+class ArticleController(private val articleUsecase: ArticleUsecase) {
 
     @RequestMapping("/", method = [RequestMethod.GET])
-    fun getArticles() : ResponseEntity<ArticlesResponse> {
+    fun getArticles(): ResponseEntity<ArticlesResponse> {
         return ResponseEntity.ok(
-            ArticlesResponse(articleUsecase.getArticlesOrderedByUpdatedDateTime().map {
+            articleUsecase.getArticlesOrderedByUpdatedDateTime().map {
                 ArticleResponse(
                     it.slug,
                     it.title,
                     it.body,
                     it.updatedAt
                 )
-            })
-        )
+            }.let { ArticlesResponse(it) })
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])
-    fun getArticle(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
+    fun getSingleArticle(@PathVariable("slug") slug: String): ResponseEntity<ArticleResponse> {
         return ResponseEntity.ok(
             articleUsecase.getArticle(slug).let {
                 ArticleResponse(
@@ -40,13 +39,39 @@ public class ArticleController(private val articleUsecase: ArticleUsecase) {
             }
         )
     }
+
+    @RequestMapping("/{slug}/comments", method = [RequestMethod.GET])
+    fun getComments(@PathVariable("slug") slug: String): ResponseEntity<CommentsResponse> {
+        return ResponseEntity.ok(
+            articleUsecase.getCommentsOfArticle(slug).map {
+                CommentResponse(
+                    it.id,
+                    it.body,
+                    it.createdAt,
+                    it.updatedAt
+                )
+            }.let { CommentsResponse(it) })
+    }
 }
 
 data class ArticlesResponse(
-    @JsonProperty("articles") val articles: List<ArticleResponse>)
+    @JsonProperty("articles") val articles: List<ArticleResponse>
+)
 
 data class ArticleResponse(
     @JsonProperty("slug") val slug: String,
     @JsonProperty("title") val title: String,
     @JsonProperty("body") val body: String,
-    @JsonProperty("updatedAt") val updatedAt: LocalDateTime)
+    @JsonProperty("updatedAt") val updatedAt: LocalDateTime
+)
+
+data class CommentsResponse(
+    @JsonProperty("comments") val comments: List<CommentResponse>
+)
+
+data class CommentResponse(
+    @JsonProperty("id") val id: Int,
+    @JsonProperty("body") val body: String,
+    @JsonProperty("createdAt") val createdAt: LocalDateTime,
+    @JsonProperty("updatedAt") val updatedAt: LocalDateTime?
+)
