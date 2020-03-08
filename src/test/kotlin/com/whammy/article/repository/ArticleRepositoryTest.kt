@@ -3,6 +3,7 @@ package com.whammy.article.repository
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
 import com.whammy.article.domain.Comment
+import com.whammy.article.domain.Comments
 import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.every
 import io.mockk.mockk
@@ -84,7 +85,7 @@ class ArticleRepositoryTest {
         val driver = mockk<ArticleDriver>()
         val repository = ArticleRepository(driver)
         val models = listOf(CommentModel(1, "body1", LocalDateTime.of(2020,1,1,10,0)))
-        val comments = listOf(Comment(1, "body1", LocalDateTime.of(2020,1,1,10,0)))
+        val comments = Comments(listOf(Comment(1, "body1", LocalDateTime.of(2020,1,1,10,0))))
 
         every { driver.getArticle("slug1") } returns mockk()
         every { driver.getCommentsOfArticle("slug1") } returns models
@@ -105,7 +106,7 @@ class ArticleRepositoryTest {
         every { driver.getArticle("slug1") } returns mockk()
         every { driver.getCommentsOfArticle("slug1") } returns models
 
-        assertEquals(emptyList(), repository.getCommentsOfArticle("slug1"))
+        assertEquals(Comments(emptyList()), repository.getCommentsOfArticle("slug1"))
 
         verify {
             driver.getArticle("slug1")
@@ -123,5 +124,20 @@ class ArticleRepositoryTest {
         assertThrows<ArticleNotFoundException> { repository.getCommentsOfArticle("no-article") }
 
         verify { driver.getArticle("no-article") }
+    }
+
+    @Test
+    internal fun testSaveComments() {
+        val driver = mockk<ArticleDriver>()
+        val repository = ArticleRepository(driver)
+        val slug = "slug"
+        val models = listOf(CommentModel(1, "body1", LocalDateTime.of(2020,1,1,10,0)))
+        val comments = Comments(listOf(Comment(1, "body1", LocalDateTime.of(2020,1,1,10,0))))
+
+        every { driver.saveComments(slug, models) } returns models
+
+        assertEquals(comments, repository.saveComments(slug, comments))
+
+        verify { driver.saveComments(slug, models) }
     }
 }

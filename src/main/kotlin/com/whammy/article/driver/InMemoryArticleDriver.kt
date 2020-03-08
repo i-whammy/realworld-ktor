@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 @Component
 class InMemoryArticleDriver: ArticleDriver {
-    private val articles = listOf(
+    private val articles = mutableListOf(
         ArticleModel(
             "Title-1",
             "Title 1",
@@ -38,5 +38,11 @@ class InMemoryArticleDriver: ArticleDriver {
 
     override fun getCommentsOfArticle(slug: String): List<CommentModel> {
         return getArticle(slug)?.comments ?: emptyList()
+    }
+
+    override fun saveComments(slug: String, models: List<CommentModel>): List<CommentModel> {
+        val article = articles.find { it.slug == slug }!!
+        article.comments = models
+        return models
     }
 }

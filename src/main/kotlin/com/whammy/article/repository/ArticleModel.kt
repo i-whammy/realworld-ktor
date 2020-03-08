@@ -7,7 +7,7 @@ data class ArticleModel(
     val title: String,
     val body: String,
     val updated: LocalDateTime,
-    val comments: List<CommentModel>
+    var comments: List<CommentModel>
 )
 
 data class CommentModel(val id: Int, val body: String, val createdAt: LocalDateTime, val updatedAt: LocalDateTime? = null)

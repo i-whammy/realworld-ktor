@@ -5,6 +5,7 @@ import com.whammy.article.usecase.ArticleUsecase
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import java.time.LocalDateTime
@@ -52,6 +53,16 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
                 )
             }.let { CommentsResponse(it) })
     }
+
+    @RequestMapping("/{slug}/comments", method = [RequestMethod.POST])
+    fun postComment(@PathVariable("slug") slug:String, @RequestBody comment: SingleCommentRequest) : ResponseEntity<SingleCommentResponse> {
+        return ResponseEntity.ok(articleUsecase.addComment(slug, comment.comment.body).let {
+            SingleCommentResponse(
+                CommentResponse(it.id, it.body, it.createdAt, it.updatedAt)
+            )
+        })
+    }
+
 }
 
 data class ArticlesResponse(
@@ -65,8 +76,20 @@ data class ArticleResponse(
     @JsonProperty("updatedAt") val updatedAt: LocalDateTime
 )
 
+data class SingleCommentRequest(
+    @JsonProperty("comment") val comment: CommentRequest
+)
+
+data class CommentRequest(
+    @JsonProperty("body") val body:String
+)
+
 data class CommentsResponse(
     @JsonProperty("comments") val comments: List<CommentResponse>
+)
+
+data class SingleCommentResponse(
+    @JsonProperty("comment") val comment: CommentResponse
 )
 
 data class CommentResponse(

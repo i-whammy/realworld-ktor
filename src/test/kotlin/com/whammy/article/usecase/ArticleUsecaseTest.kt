@@ -3,14 +3,15 @@ package com.whammy.article.usecase
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
 import com.whammy.article.domain.Comment
+import com.whammy.article.domain.Comments
 import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
 class ArticleUsecaseTest {
@@ -100,10 +101,51 @@ class ArticleUsecaseTest {
     fun testGetCommentsOfArticle() {
         val repository = mockk<IArticleRepository>()
         val usecase = ArticleUsecase(repository)
-        val comments = listOf<Comment>()
+        val comments = mockk<Comments>()
 
         every { repository.getCommentsOfArticle("slug") } returns comments
         assertEquals(comments, usecase.getCommentsOfArticle("slug"))
         verify { repository.getCommentsOfArticle("slug") }
+    }
+
+    // TODO add comment to an existing article with authentication
+    @Test
+    fun testAddCommentToArticle() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+        val slug = "slug-1"
+        val body = "body"
+        val newComment = mockk<Comment>()
+        val comments = mockk<Comments>()
+        val newComments = mockk<Comments>()
+
+        every { repository.getCommentsOfArticle(slug) } returns comments
+        every { comments.add(body) } returns newComments
+        every { repository.saveComments(slug,newComments) } returns newComments
+        every { newComments.getLatestComment() } returns newComment
+
+        assertEquals(newComment, usecase.addComment(slug, body))
+
+        verify {
+            repository.getCommentsOfArticle(slug)
+            comments.add(body)
+            newComments.getLatestComment()
+        }
+    }
+
+    @Test
+    fun testFailedToAddCommentToArticle() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+        val slug = "no-article-slug-1"
+        val body = "body"
+
+        every { repository.getCommentsOfArticle(slug) } throws ArticleNotFoundException("")
+
+        assertThrows<ArticleNotFoundException> { usecase.addComment(slug, body) }
+
+        verify {
+            repository.getCommentsOfArticle(slug)
+        }
     }
 }
