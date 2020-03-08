@@ -3,9 +3,6 @@ package com.whammy.article.repository
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
 import com.whammy.article.exception.ArticleNotFoundException
-import com.whammy.article.repository.ArticleDriver
-import com.whammy.article.repository.ArticleModel
-import com.whammy.article.repository.ArticleRepository
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -24,7 +21,8 @@ class ArticleRepositoryTest {
                     "title-1",
                     "title1",
                     "body",
-                    LocalDateTime.of(2020, 1, 1, 0, 0)
+                    LocalDateTime.of(2020, 1, 1, 0, 0),
+                    emptyList()
                 )
             )
         )
@@ -51,7 +49,8 @@ class ArticleRepositoryTest {
             "title-1",
             "title1",
             "body",
-            LocalDateTime.of(2020, 1, 1, 0, 0)
+            LocalDateTime.of(2020, 1, 1, 0, 0),
+            emptyList()
         )
 
         val articleModel = ArticleModel(

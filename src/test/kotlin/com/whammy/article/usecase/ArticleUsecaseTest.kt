@@ -3,8 +3,6 @@ package com.whammy.article.usecase
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
 import com.whammy.article.exception.ArticleNotFoundException
-import com.whammy.article.usecase.ArticleUsecase
-import com.whammy.article.usecase.IArticleRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -25,13 +23,15 @@ class ArticleUsecaseTest {
                     "title-1",
                     "title1",
                     "body1",
-                    LocalDateTime.of(2019, 1, 1, 0, 0)
+                    LocalDateTime.of(2019, 1, 1, 0, 0),
+                    emptyList()
                 ),
                 Article(
                     "title-2",
                     "title2",
                     "body2",
-                    LocalDateTime.of(2020, 1, 1, 0, 0)
+                    LocalDateTime.of(2020, 1, 1, 0, 0),
+                    emptyList()
                 )
             )
         )
@@ -41,13 +41,15 @@ class ArticleUsecaseTest {
                     "title-2",
                     "title2",
                     "body2",
-                    LocalDateTime.of(2020, 1, 1, 0, 0)
+                    LocalDateTime.of(2020, 1, 1, 0, 0),
+                    emptyList()
                 ),
                 Article(
                     "title-1",
                     "title1",
                     "body1",
-                    LocalDateTime.of(2019, 1, 1, 0, 0)
+                    LocalDateTime.of(2019, 1, 1, 0, 0),
+                    emptyList()
                 )
             )
         )
@@ -69,7 +71,8 @@ class ArticleUsecaseTest {
             "title-1",
             "title1",
             "body",
-            LocalDateTime.of(2020, 1, 1, 0, 0)
+            LocalDateTime.of(2020, 1, 1, 0, 0),
+            emptyList()
         )
 
         every { repository.getArticle("title-1") } returns article

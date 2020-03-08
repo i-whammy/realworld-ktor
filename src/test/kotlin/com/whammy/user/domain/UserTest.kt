@@ -1,6 +1,5 @@
 package com.whammy.user.domain
 
-import com.whammy.user.domain.User
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals

@@ -15,13 +15,14 @@ class ArticleRepository(private val driver: ArticleDriver):
                 it.slug,
                 it.title,
                 it.body,
-                it.updated
+                it.updated,
+                emptyList()
             )
         })
     }
 
     override fun getArticle(slug: String): Article {
-        return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated) }
+        return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated, emptyList()) }
             ?: throw ArticleNotFoundException("Article not found. slug = $slug")
     }
 }
