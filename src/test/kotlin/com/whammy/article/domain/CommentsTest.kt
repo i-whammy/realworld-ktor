@@ -7,7 +7,6 @@ import io.mockk.mockkStatic
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -17,18 +16,19 @@ class CommentsTest {
     internal fun testAddCommentWithIncrementalIdAndAddedTime() {
         val createdAt = mockk<LocalDateTime>()
         mockkStatic(LocalDateTime::class)
+        val email = "taro@example.com"
         val comments = Comments(listOf(
-            Comment(1,"body", LocalDateTime.of(2020,1,1,12,0)),
-            Comment(2,"body", LocalDateTime.of(2020,1,1,12,0))
+            Comment(1, "body", "address@example.com", LocalDateTime.of(2020,1,1,12,0)),
+            Comment(2, "body", "address2@example.com", LocalDateTime.of(2020,1,1,12,0))
         ))
         val newComments = Comments(listOf(
-            Comment(1,"body", LocalDateTime.of(2020,1,1,12,0)),
-            Comment(2,"body", LocalDateTime.of(2020,1,1,12,0)),
-            Comment(3,"New comment body", createdAt)
+            Comment(1, "body","address@example.com", LocalDateTime.of(2020,1,1,12,0)),
+            Comment(2, "body","address2@example.com", LocalDateTime.of(2020,1,1,12,0)),
+            Comment(3, "New comment body", email, createdAt)
         ))
         every { LocalDateTime.now() } returns createdAt
 
-        assertEquals(newComments, comments.add("New comment body"))
+        assertEquals(newComments, comments.add(email, "New comment body"))
 
         verify { LocalDateTime.now() }
     }
@@ -38,21 +38,22 @@ class CommentsTest {
         val createdAt = mockk<LocalDateTime>()
         mockkStatic(LocalDateTime::class)
         val comments = Comments(emptyList())
-        val newComments = Comments(listOf(Comment(1,"New comment body", createdAt)))
+        val email = "taro@example.com"
+        val newComments = Comments(listOf(Comment(1, "New comment body", email, createdAt)))
         every { LocalDateTime.now() } returns createdAt
 
-        assertEquals(newComments, comments.add("New comment body"))
+        assertEquals(newComments, comments.add(email, "New comment body"))
 
         verify { LocalDateTime.now() }
     }
 
     @Test
     internal fun testGetLatestComment() {
-        val latestComment = Comment(3, "body", mockk())
+        val latestComment = Comment(3, "body","example@example.com", mockk())
         val comments = Comments(
             listOf(
-                Comment(1, "body", mockk()),
-                Comment(2, "body", mockk()),
+                Comment(1, "body", "example@example.com", mockk()),
+                Comment(2, "body","example@example.com", mockk()),
                 latestComment
             )
         )

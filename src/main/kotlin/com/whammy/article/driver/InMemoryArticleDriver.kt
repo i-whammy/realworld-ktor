@@ -15,8 +15,8 @@ class InMemoryArticleDriver: ArticleDriver {
             "This is a sample article.",
             LocalDateTime.of(2020, 1, 1, 12, 0),
             listOf(
-                CommentModel(1, "This is my first comment!", LocalDateTime.of(2020,1,15, 12,0)),
-                CommentModel(2, "This is the second comment!", LocalDateTime.of(2020,1,15, 18,0))
+                CommentModel(1, "This is my first comment!", "taro@example.com", LocalDateTime.of(2020,1,15, 12,0)),
+                CommentModel(2, "This is the second comment!", "jiro@example.com", LocalDateTime.of(2020,1,15, 18,0))
             )
         ),
         ArticleModel(

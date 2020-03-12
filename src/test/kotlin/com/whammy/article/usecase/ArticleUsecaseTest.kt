@@ -113,6 +113,7 @@ class ArticleUsecaseTest {
     fun testAddCommentToArticle() {
         val repository = mockk<IArticleRepository>()
         val usecase = ArticleUsecase(repository)
+        val email = "taro@example.com"
         val slug = "slug-1"
         val body = "body"
         val newComment = mockk<Comment>()
@@ -120,15 +121,15 @@ class ArticleUsecaseTest {
         val newComments = mockk<Comments>()
 
         every { repository.getCommentsOfArticle(slug) } returns comments
-        every { comments.add(body) } returns newComments
-        every { repository.saveComments(slug,newComments) } returns newComments
+        every { comments.add(email, body) } returns newComments
+        every { repository.saveComments(slug, newComments) } returns newComments
         every { newComments.getLatestComment() } returns newComment
 
-        assertEquals(newComment, usecase.addComment(slug, body))
+        assertEquals(newComment, usecase.addComment(email, slug, body))
 
         verify {
             repository.getCommentsOfArticle(slug)
-            comments.add(body)
+            comments.add(email, body)
             newComments.getLatestComment()
         }
     }
@@ -137,12 +138,13 @@ class ArticleUsecaseTest {
     fun testFailedToAddCommentToArticle() {
         val repository = mockk<IArticleRepository>()
         val usecase = ArticleUsecase(repository)
+        val email = "taro@example.com"
         val slug = "no-article-slug-1"
         val body = "body"
 
         every { repository.getCommentsOfArticle(slug) } throws ArticleNotFoundException("")
 
-        assertThrows<ArticleNotFoundException> { usecase.addComment(slug, body) }
+        assertThrows<ArticleNotFoundException> { usecase.addComment(email, slug, body) }
 
         verify {
             repository.getCommentsOfArticle(slug)

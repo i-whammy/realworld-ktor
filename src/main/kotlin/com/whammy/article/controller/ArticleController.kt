@@ -56,7 +56,7 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
 
     @RequestMapping("/{slug}/comments", method = [RequestMethod.POST])
     fun postComment(@PathVariable("slug") slug:String, @RequestBody comment: SingleCommentRequest) : ResponseEntity<SingleCommentResponse> {
-        return ResponseEntity.ok(articleUsecase.addComment(slug, comment.comment.body).let {
+        return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.comment.body).let {
             SingleCommentResponse(
                 CommentResponse(it.id, it.body, it.createdAt, it.updatedAt)
             )

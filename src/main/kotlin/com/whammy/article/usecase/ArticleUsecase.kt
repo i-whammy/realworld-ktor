@@ -20,9 +20,9 @@ class ArticleUsecase(private val repository: IArticleRepository) {
         return repository.getCommentsOfArticle(slug)
     }
 
-    fun addComment(slug: String, body: String): Comment {
+    fun addComment(email: String, slug: String, body: String): Comment {
         val comments = repository.getCommentsOfArticle(slug)
-        val newComments = comments.add(body)
+        val newComments = comments.add(email, body)
         repository.saveComments(slug, newComments)
         return newComments.getLatestComment()
     }

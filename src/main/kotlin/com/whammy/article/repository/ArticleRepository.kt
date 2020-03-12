@@ -32,13 +32,13 @@ class ArticleRepository(private val driver: ArticleDriver):
     override fun getCommentsOfArticle(slug: String): Comments {
         val article = driver.getArticle(slug) ?: throw ArticleNotFoundException("Article not found. slug = $slug")
         return driver.getCommentsOfArticle(slug).map {
-            Comment(it.id, it.body, it.createdAt, it.updatedAt)
+            Comment(it.id, it.body, it.authorEmailAddress, it.createdAt, it.updatedAt)
         }.let { Comments(it) }
     }
 
     override fun saveComments(slug: String, comments: Comments): Comments {
         driver.saveComments(slug, comments.map {
-            CommentModel(it.id, it.body, it.createdAt, it.updatedAt)
+            CommentModel(it.id, it.body, it.authorEmailAddress, it.createdAt, it.updatedAt)
         })
         return comments
     }

@@ -84,8 +84,8 @@ class ArticleRepositoryTest {
     fun testGetCommentsOfArticle() {
         val driver = mockk<ArticleDriver>()
         val repository = ArticleRepository(driver)
-        val models = listOf(CommentModel(1, "body1", LocalDateTime.of(2020,1,1,10,0)))
-        val comments = Comments(listOf(Comment(1, "body1", LocalDateTime.of(2020,1,1,10,0))))
+        val models = listOf(CommentModel(1, "body1", "taro@example.com",LocalDateTime.of(2020,1,1,10,0)))
+        val comments = Comments(listOf(Comment(1, "body1", "taro@example.com", LocalDateTime.of(2020,1,1,10,0))))
 
         every { driver.getArticle("slug1") } returns mockk()
         every { driver.getCommentsOfArticle("slug1") } returns models
@@ -131,8 +131,8 @@ class ArticleRepositoryTest {
         val driver = mockk<ArticleDriver>()
         val repository = ArticleRepository(driver)
         val slug = "slug"
-        val models = listOf(CommentModel(1, "body1", LocalDateTime.of(2020,1,1,10,0)))
-        val comments = Comments(listOf(Comment(1, "body1", LocalDateTime.of(2020,1,1,10,0))))
+        val models = listOf(CommentModel(1, "body1", "taro@example.com", LocalDateTime.of(2020,1,1,10,0)))
+        val comments = Comments(listOf(Comment(1, "body1","taro@example.com", LocalDateTime.of(2020,1,1,10,0))))
 
         every { driver.saveComments(slug, models) } returns models
 
