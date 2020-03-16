@@ -19,13 +19,14 @@ class ArticleRepository(private val driver: ArticleDriver):
                 it.body,
                 it.updated,
                 // TODO enable to return comment
+                emptyList(),
                 emptyList()
             )
         })
     }
 
     override fun getArticle(slug: String): Article {
-        return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated, emptyList()) }
+        return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated, emptyList(), emptyList()) }
             ?: throw ArticleNotFoundException("Article not found. slug = $slug")
     }
 
@@ -41,5 +42,9 @@ class ArticleRepository(private val driver: ArticleDriver):
             CommentModel(it.id, it.body, it.authorEmailAddress, it.createdAt, it.updatedAt)
         })
         return comments
+    }
+
+    override fun saveArticle(article: Article): Article {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

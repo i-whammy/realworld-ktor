@@ -7,5 +7,14 @@ data class Article(
     val title: String,
     val body: String,
     val updatedAt: LocalDateTime,
-    val comments: List<Comment>
-)
+    val comments: List<Comment>,
+    val favorites: List<Favorite>
+) {
+    fun toggleFavoriteFrom(emailAddress: String): Article {
+        if (this.favorites.contains(Favorite(emailAddress))) {
+            return Article(this.slug, this.title, this.body, this.updatedAt, this.comments, this.favorites.minus(Favorite(emailAddress)))
+        } else {
+            return Article(this.slug, this.title, this.body, this.updatedAt, this.comments, this.favorites.plus(Favorite(emailAddress)))
+        }
+    }
+}

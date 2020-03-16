@@ -1,9 +1,6 @@
 package com.whammy.article.usecase
 
-import com.whammy.article.domain.Article
-import com.whammy.article.domain.Articles
-import com.whammy.article.domain.Comment
-import com.whammy.article.domain.Comments
+import com.whammy.article.domain.*
 import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.every
 import io.mockk.mockk
@@ -11,7 +8,6 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
 class ArticleUsecaseTest {
@@ -27,6 +23,7 @@ class ArticleUsecaseTest {
                     "title1",
                     "body1",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
+                    emptyList(),
                     emptyList()
                 ),
                 Article(
@@ -34,6 +31,7 @@ class ArticleUsecaseTest {
                     "title2",
                     "body2",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
+                    emptyList(),
                     emptyList()
                 )
             )
@@ -45,6 +43,7 @@ class ArticleUsecaseTest {
                     "title2",
                     "body2",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
+                    emptyList(),
                     emptyList()
                 ),
                 Article(
@@ -52,6 +51,7 @@ class ArticleUsecaseTest {
                     "title1",
                     "body1",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
+                    emptyList(),
                     emptyList()
                 )
             )
@@ -75,6 +75,7 @@ class ArticleUsecaseTest {
             "title1",
             "body",
             LocalDateTime.of(2020, 1, 1, 0, 0),
+            emptyList(),
             emptyList()
         )
 
@@ -149,5 +150,39 @@ class ArticleUsecaseTest {
         verify {
             repository.getCommentsOfArticle(slug)
         }
+    }
+
+    @Test
+    internal fun testToggleFavorite() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+        val slug = "slug"
+        val user = "user@example.com"
+        val article = mockk<Article>()
+        val likedArticle = Article(slug, "title", "body", mockk(), emptyList(), listOf(Favorite(user)))
+        val storedArticle = mockk<Article>()
+
+        every { repository.getArticle(slug) } returns article
+        every { article.toggleFavoriteFrom(user) } returns likedArticle
+        every { repository.saveArticle(likedArticle) } returns storedArticle
+
+        assertEquals(storedArticle, usecase.toggleFavorite(slug, user))
+
+        verify {
+            repository.getArticle(slug)
+            article.toggleFavoriteFrom(user)
+        }
+    }
+
+    @Test
+    internal fun testFailedToGetArticleWhenTogglingFavorite() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+
+        every { repository.getArticle("no-article") } throws ArticleNotFoundException("")
+
+        assertThrows<ArticleNotFoundException> { usecase.toggleFavorite("no-article", "no-one@example.com") }
+
+        verify { repository.getArticle("no-article") }
     }
 }

@@ -25,6 +25,7 @@ class ArticleRepositoryTest {
                     "title1",
                     "body",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
+                    emptyList(),
                     emptyList()
                 )
             )
@@ -54,6 +55,7 @@ class ArticleRepositoryTest {
             "title1",
             "body",
             LocalDateTime.of(2020, 1, 1, 0, 0),
+            emptyList(),
             emptyList()
         )
 

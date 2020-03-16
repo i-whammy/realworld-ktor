@@ -26,4 +26,9 @@ class ArticleUsecase(private val repository: IArticleRepository) {
         repository.saveComments(slug, newComments)
         return newComments.getLatestComment()
     }
+
+    fun toggleFavorite(slug: String, user: String): Article {
+        val article = repository.getArticle(slug)
+        return repository.saveArticle(article.toggleFavoriteFrom(user))
+    }
 }
