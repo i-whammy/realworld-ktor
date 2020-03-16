@@ -15,7 +15,7 @@ class ArticlesTest {
                     "title1",
                     "body1",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 ),
                 Article(
@@ -23,7 +23,7 @@ class ArticlesTest {
                     "title2",
                     "body2",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 )
             )
@@ -35,7 +35,7 @@ class ArticlesTest {
                     "title2",
                     "body2",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 ),
                 Article(
@@ -43,7 +43,7 @@ class ArticlesTest {
                     "title1",
                     "body1",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 )
             )

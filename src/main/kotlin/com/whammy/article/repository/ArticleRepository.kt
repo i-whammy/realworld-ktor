@@ -1,9 +1,6 @@
 package com.whammy.article.repository
 
-import com.whammy.article.domain.Article
-import com.whammy.article.domain.Articles
-import com.whammy.article.domain.Comment
-import com.whammy.article.domain.Comments
+import com.whammy.article.domain.*
 import com.whammy.article.exception.ArticleNotFoundException
 import com.whammy.article.usecase.IArticleRepository
 import org.springframework.stereotype.Repository
@@ -18,15 +15,14 @@ class ArticleRepository(private val driver: ArticleDriver):
                 it.title,
                 it.body,
                 it.updated,
-                // TODO enable to return comment
-                emptyList(),
-                emptyList()
+                it.comments.convertToComments(),
+                it.favorites.convertToFavorites()
             )
         })
     }
 
     override fun getArticle(slug: String): Article {
-        return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated, emptyList(), emptyList()) }
+        return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated, it.comments.convertToComments(), it.favorites.convertToFavorites()) }
             ?: throw ArticleNotFoundException("Article not found. slug = $slug")
     }
 
@@ -50,4 +46,11 @@ class ArticleRepository(private val driver: ArticleDriver):
             article.favorites.map { FavoriteModel(it.userEmailAddress) }))
         return article
     }
+
+    private fun List<CommentModel>.convertToComments() =
+        this.map { it.convertToComment() }.let(::Comments)
+
+    private fun CommentModel.convertToComment() = Comment(id, body, authorEmailAddress, createdAt, updatedAt)
+
+    private fun List<FavoriteModel>.convertToFavorites() = this.map { favorite -> Favorite(favorite.userEmailAddress) }
 }

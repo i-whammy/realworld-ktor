@@ -23,7 +23,7 @@ class ArticleRepositoryTest {
                     "title1",
                     "body",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 )
             )
@@ -54,7 +54,7 @@ class ArticleRepositoryTest {
             "title1",
             "body",
             LocalDateTime.of(2020, 1, 1, 0, 0),
-            emptyList(),
+            Comments(emptyList()),
             emptyList()
         )
 
@@ -152,7 +152,7 @@ class ArticleRepositoryTest {
             "title",
             "body",
             LocalDateTime.of(2020,1,1,12,0),
-            listOf(Comment(1,"comment body", "user@example.com", LocalDateTime.of(2020,2,1,12,0))),
+            Comments(listOf(Comment(1,"comment body", "user@example.com", LocalDateTime.of(2020,2,1,12,0)))),
             listOf(Favorite("favorite@example.com")))
         val model = ArticleModel(
             "slug",

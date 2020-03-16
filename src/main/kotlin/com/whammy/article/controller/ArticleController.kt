@@ -2,6 +2,7 @@ package com.whammy.article.controller
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.whammy.article.domain.Article
+import com.whammy.article.domain.Comment
 import com.whammy.article.usecase.ArticleUsecase
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -29,24 +30,13 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
     @RequestMapping("/{slug}/comments", method = [RequestMethod.GET])
     fun getComments(@PathVariable("slug") slug: String): ResponseEntity<CommentsResponse> {
         return ResponseEntity.ok(
-            articleUsecase.getCommentsOfArticle(slug).map {
-                CommentResponse(
-                    it.id,
-                    it.body,
-                    it.createdAt,
-                    it.updatedAt
-                )
-            }.let { CommentsResponse(it) })
+            articleUsecase.getCommentsOfArticle(slug).map { it.convertToCommentResponse() }.let { CommentsResponse(it) })
     }
 
     // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/comments", method = [RequestMethod.POST])
     fun postComment(@PathVariable("slug") slug:String, @RequestBody comment: SingleCommentRequest) : ResponseEntity<SingleCommentResponse> {
-        return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.comment.body).let {
-            SingleCommentResponse(
-                CommentResponse(it.id, it.body, it.createdAt, it.updatedAt)
-            )
-        })
+        return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.comment.body).convertToCommentResponse().let { SingleCommentResponse(it) })
     }
 
     @RequestMapping("/{slug}/favorite", method = [RequestMethod.POST])
@@ -61,6 +51,10 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
 
     private fun Article.convertToArticleResponse() : ArticleResponse {
         return ArticleResponse(slug, title, body, updatedAt, favorites.isNotEmpty(), favorites.count())
+    }
+
+    private fun Comment.convertToCommentResponse() : CommentResponse {
+        return CommentResponse(id, body, createdAt, updatedAt)
     }
 }
 

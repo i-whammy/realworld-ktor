@@ -7,7 +7,8 @@ data class Article(
     val title: String,
     val body: String,
     val updatedAt: LocalDateTime,
-    val comments: List<Comment>,
+    // TODO use comments
+    val comments: Comments,
     val favorites: List<Favorite>
 ) {
     fun toggleFavoriteFrom(emailAddress: String): Article {

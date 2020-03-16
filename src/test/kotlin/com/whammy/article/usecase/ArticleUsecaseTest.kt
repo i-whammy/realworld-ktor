@@ -23,7 +23,7 @@ class ArticleUsecaseTest {
                     "title1",
                     "body1",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 ),
                 Article(
@@ -31,7 +31,7 @@ class ArticleUsecaseTest {
                     "title2",
                     "body2",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 )
             )
@@ -43,7 +43,7 @@ class ArticleUsecaseTest {
                     "title2",
                     "body2",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 ),
                 Article(
@@ -51,7 +51,7 @@ class ArticleUsecaseTest {
                     "title1",
                     "body1",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
-                    emptyList(),
+                    Comments(emptyList()),
                     emptyList()
                 )
             )
@@ -75,7 +75,7 @@ class ArticleUsecaseTest {
             "title1",
             "body",
             LocalDateTime.of(2020, 1, 1, 0, 0),
-            emptyList(),
+            Comments(emptyList()),
             emptyList()
         )
 
@@ -159,7 +159,7 @@ class ArticleUsecaseTest {
         val slug = "slug"
         val user = "user@example.com"
         val article = mockk<Article>()
-        val likedArticle = Article(slug, "title", "body", mockk(), emptyList(), listOf(Favorite(user)))
+        val likedArticle = Article(slug, "title", "body", mockk(), Comments(emptyList()), listOf(Favorite(user)))
         val storedArticle = mockk<Article>()
 
         every { repository.getArticle(slug) } returns article
