@@ -1,15 +1,13 @@
 package com.whammy.article.repository
 
-import com.whammy.article.domain.Article
-import com.whammy.article.domain.Articles
-import com.whammy.article.domain.Comment
-import com.whammy.article.domain.Comments
+import com.whammy.article.domain.*
 import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
@@ -37,6 +35,7 @@ class ArticleRepositoryTest {
                 "title1",
                 "body",
                 LocalDateTime.of(2020, 1, 1, 0, 0),
+                emptyList(),
                 emptyList()
             )
         )
@@ -64,6 +63,7 @@ class ArticleRepositoryTest {
             "title1",
             "body",
             LocalDateTime.of(2020, 1, 1, 0, 0),
+            emptyList(),
             emptyList()
         )
 
@@ -141,5 +141,28 @@ class ArticleRepositoryTest {
         assertEquals(comments, repository.saveComments(slug, comments))
 
         verify { driver.saveComments(slug, models) }
+    }
+
+    @Test
+    internal fun testSaveArticle() {
+        val driver = mockk<ArticleDriver>()
+        val repository = ArticleRepository(driver)
+        val article = Article(
+            "slug",
+            "title",
+            "body",
+            LocalDateTime.of(2020,1,1,12,0),
+            listOf(Comment(1,"comment body", "user@example.com", LocalDateTime.of(2020,2,1,12,0))),
+            listOf(Favorite("favorite@example.com")))
+        val model = ArticleModel(
+            "slug",
+            "title",
+            "body",
+            LocalDateTime.of(2020,1,1,12,0),
+            listOf(CommentModel(1,"comment body", "user@example.com", LocalDateTime.of(2020,2,1,12,0))),
+            listOf(FavoriteModel("favorite@example.com"))
+        )
+        every { driver.saveArticle(model) } returns model
+        assertEquals(article, repository.saveArticle(article))
     }
 }

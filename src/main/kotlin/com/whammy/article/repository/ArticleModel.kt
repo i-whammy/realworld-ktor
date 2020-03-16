@@ -7,11 +7,18 @@ data class ArticleModel(
     val title: String,
     val body: String,
     val updated: LocalDateTime,
-    var comments: List<CommentModel>
+    var comments: List<CommentModel>,
+    val favorites: List<FavoriteModel>
 )
 
-data class CommentModel(val id: Int,
-                        val body: String,
-                        val authorEmailAddress: String,
-                        val createdAt: LocalDateTime,
-                        val updatedAt: LocalDateTime? = null)
+data class CommentModel(
+    val id: Int,
+    val body: String,
+    val authorEmailAddress: String,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime? = null
+)
+
+data class FavoriteModel(
+    val userEmailAddress: String
+)

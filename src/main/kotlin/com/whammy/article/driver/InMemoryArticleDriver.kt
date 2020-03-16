@@ -3,6 +3,7 @@ package com.whammy.article.driver
 import com.whammy.article.repository.ArticleDriver
 import com.whammy.article.repository.ArticleModel
 import com.whammy.article.repository.CommentModel
+import com.whammy.article.repository.FavoriteModel
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
@@ -17,13 +18,15 @@ class InMemoryArticleDriver: ArticleDriver {
             listOf(
                 CommentModel(1, "This is my first comment!", "taro@example.com", LocalDateTime.of(2020,1,15, 12,0)),
                 CommentModel(2, "This is the second comment!", "jiro@example.com", LocalDateTime.of(2020,1,15, 18,0))
-            )
+            ),
+            listOf(FavoriteModel("faviorite@example.com"))
         ),
         ArticleModel(
             "Title-2",
             "Title 2",
             "This article would be latest.",
             LocalDateTime.of(2020, 1, 1, 18, 0),
+            emptyList(),
             emptyList()
         )
     )
@@ -40,9 +43,15 @@ class InMemoryArticleDriver: ArticleDriver {
         return getArticle(slug)?.comments ?: emptyList()
     }
 
-    override fun saveComments(slug: String, models: List<CommentModel>): List<CommentModel> {
+    override fun saveComments(slug: String, commentModels: List<CommentModel>): List<CommentModel> {
         val article = articles.find { it.slug == slug }!!
-        article.comments = models
-        return models
+        article.comments = commentModels
+        return commentModels
+    }
+
+    override fun saveArticle(articleModel: ArticleModel): ArticleModel {
+        articles.removeIf { it.slug == articleModel.slug }
+        articles.add(articleModel)
+        return articleModel
     }
 }

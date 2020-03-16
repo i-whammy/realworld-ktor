@@ -45,6 +45,9 @@ class ArticleRepository(private val driver: ArticleDriver):
     }
 
     override fun saveArticle(article: Article): Article {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        driver.saveArticle(ArticleModel(article.slug, article.title, article.body, article.updatedAt,
+            article.comments.map { CommentModel(it.id, it.body, it.authorEmailAddress, it.createdAt, it.updatedAt) },
+            article.favorites.map { FavoriteModel(it.userEmailAddress) }))
+        return article
     }
 }

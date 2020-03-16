@@ -1,6 +1,7 @@
 package com.whammy.article.controller
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.whammy.article.domain.Article
 import com.whammy.article.usecase.ArticleUsecase
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -17,28 +18,12 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
     @RequestMapping("/", method = [RequestMethod.GET])
     fun getArticles(): ResponseEntity<ArticlesResponse> {
         return ResponseEntity.ok(
-            articleUsecase.getArticlesOrderedByUpdatedDateTime().map {
-                ArticleResponse(
-                    it.slug,
-                    it.title,
-                    it.body,
-                    it.updatedAt
-                )
-            }.let { ArticlesResponse(it) })
+            articleUsecase.getArticlesOrderedByUpdatedDateTime().map { it.convertToArticleResponse() }.let { ArticlesResponse(it) })
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])
     fun getSingleArticle(@PathVariable("slug") slug: String): ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(
-            articleUsecase.getArticle(slug).let {
-                ArticleResponse(
-                    it.slug,
-                    it.title,
-                    it.body,
-                    it.updatedAt
-                )
-            }
-        )
+        return ResponseEntity.ok(articleUsecase.getArticle(slug).convertToArticleResponse())
     }
 
     @RequestMapping("/{slug}/comments", method = [RequestMethod.GET])
@@ -54,6 +39,7 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
             }.let { CommentsResponse(it) })
     }
 
+    // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/comments", method = [RequestMethod.POST])
     fun postComment(@PathVariable("slug") slug:String, @RequestBody comment: SingleCommentRequest) : ResponseEntity<SingleCommentResponse> {
         return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.comment.body).let {
@@ -63,6 +49,14 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
         })
     }
 
+    @RequestMapping("/{slug}/favorite", method = [RequestMethod.POST])
+    fun addFavorite(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
+        return ResponseEntity.ok(articleUsecase.toggleFavorite("", slug).convertToArticleResponse())
+    }
+
+    private fun Article.convertToArticleResponse() : ArticleResponse {
+        return ArticleResponse(slug, title, body, updatedAt, favorites.isNotEmpty(), favorites.count())
+    }
 }
 
 data class ArticlesResponse(
@@ -73,7 +67,9 @@ data class ArticleResponse(
     @JsonProperty("slug") val slug: String,
     @JsonProperty("title") val title: String,
     @JsonProperty("body") val body: String,
-    @JsonProperty("updatedAt") val updatedAt: LocalDateTime
+    @JsonProperty("updatedAt") val updatedAt: LocalDateTime,
+    @JsonProperty("favorited") val favorited: Boolean,
+    @JsonProperty("favoritesCount") val favoritesCount: Int
 )
 
 data class SingleCommentRequest(
