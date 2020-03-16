@@ -54,6 +54,11 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
         return ResponseEntity.ok(articleUsecase.toggleFavorite("", slug).convertToArticleResponse())
     }
 
+    @RequestMapping("/{slug}/favorite", method = [RequestMethod.DELETE])
+    fun unfavorite(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
+        return ResponseEntity.ok(articleUsecase.toggleFavorite("", slug).convertToArticleResponse())
+    }
+
     private fun Article.convertToArticleResponse() : ArticleResponse {
         return ArticleResponse(slug, title, body, updatedAt, favorites.isNotEmpty(), favorites.count())
     }
