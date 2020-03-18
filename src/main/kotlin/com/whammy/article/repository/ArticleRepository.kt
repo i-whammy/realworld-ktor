@@ -14,7 +14,8 @@ class ArticleRepository(private val driver: ArticleDriver):
                 it.slug,
                 it.title,
                 it.body,
-                it.updated,
+                it.authorEmailAddress,
+                it.createdAt,
                 it.comments.convertToComments(),
                 it.favorites.convertToFavorites()
             )
@@ -22,7 +23,15 @@ class ArticleRepository(private val driver: ArticleDriver):
     }
 
     override fun getArticle(slug: String): Article {
-        return driver.getArticle(slug)?.let { Article(it.slug, it.title, it.body, it.updated, it.comments.convertToComments(), it.favorites.convertToFavorites()) }
+        return driver.getArticle(slug)?.let { Article(
+            it.slug,
+            it.title,
+            it.body,
+            it.authorEmailAddress,
+            it.createdAt,
+            it.comments.convertToComments(),
+            it.favorites.convertToFavorites()
+        ) }
             ?: throw ArticleNotFoundException("Article not found. slug = $slug")
     }
 
@@ -41,7 +50,7 @@ class ArticleRepository(private val driver: ArticleDriver):
     }
 
     override fun saveArticle(article: Article): Article {
-        driver.saveArticle(ArticleModel(article.slug, article.title, article.body, article.updatedAt,
+        driver.saveArticle(ArticleModel(article.slug, article.title, article.body, article.authorEmailAddress, article.createdAt,
             article.comments.map { CommentModel(it.id, it.body, it.authorEmailAddress, it.createdAt, it.updatedAt) },
             article.favorites.map { FavoriteModel(it.userEmailAddress) }))
         return article

@@ -22,6 +22,7 @@ class ArticleUsecaseTest {
                     "title-1",
                     "title1",
                     "body1",
+                    "taro@example.com",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()
@@ -30,6 +31,7 @@ class ArticleUsecaseTest {
                     "title-2",
                     "title2",
                     "body2",
+                    "taro@example.com",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()
@@ -42,6 +44,7 @@ class ArticleUsecaseTest {
                     "title-2",
                     "title2",
                     "body2",
+                    "taro@example.com",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()
@@ -50,6 +53,7 @@ class ArticleUsecaseTest {
                     "title-1",
                     "title1",
                     "body1",
+                    "taro@example.com",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()
@@ -74,6 +78,7 @@ class ArticleUsecaseTest {
             "title-1",
             "title1",
             "body",
+            "taro@example.com",
             LocalDateTime.of(2020, 1, 1, 0, 0),
             Comments(emptyList()),
             emptyList()
@@ -159,7 +164,7 @@ class ArticleUsecaseTest {
         val slug = "slug"
         val user = "user@example.com"
         val article = mockk<Article>()
-        val likedArticle = Article(slug, "title", "body", mockk(), Comments(emptyList()), listOf(Favorite(user)))
+        val likedArticle = Article(slug, "title", "body", "taro@example.com", mockk(), Comments(emptyList()), listOf(Favorite(user)))
         val storedArticle = mockk<Article>()
 
         every { repository.getArticle(slug) } returns article
@@ -184,5 +189,21 @@ class ArticleUsecaseTest {
         assertThrows<ArticleNotFoundException> { usecase.toggleFavorite("no-article", "no-one@example.com") }
 
         verify { repository.getArticle("no-article") }
+    }
+
+    @Test
+    internal fun testSaveArticle() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+
+        val user = "user@example.com"
+        val title = "title 1"
+        val body = "body"
+        val savedArticle = mockk<Article>()
+        val article = Article("title-1", title, body, "taro@example.com", mockk(), Comments(emptyList()), emptyList())
+
+        every { repository.saveArticle(article) } returns savedArticle
+
+        assertEquals(savedArticle, usecase.saveArticle(user, title, body))
     }
 }

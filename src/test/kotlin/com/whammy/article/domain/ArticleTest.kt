@@ -11,16 +11,32 @@ class ArticleTest {
     @Test
     internal fun testToggleLikeFrom() {
         val updatedAt = mockk<LocalDateTime>()
-        val article = Article("slug", "title", "body", updatedAt, Comments(emptyList()), emptyList())
-        val expected = Article("slug", "title", "body", updatedAt, Comments(emptyList()), listOf(Favorite("user@example.com")))
+        val article = Article("slug", "title", "body", "user@example.com", updatedAt, Comments(emptyList()), emptyList())
+        val expected = Article(
+            "slug",
+            "title",
+            "body",
+            "user@example.com",
+            updatedAt,
+            Comments(emptyList()),
+            listOf(Favorite("user@example.com"))
+        )
         assertEquals(expected, article.toggleFavoriteFrom("user@example.com"))
     }
 
     @Test
     internal fun testToggleLikeFromWhenAlreadyLikedByTheUser() {
         val updatedAt = mockk<LocalDateTime>()
-        val article = Article("slug", "title", "body", updatedAt, Comments(emptyList()), listOf(Favorite("user@example.com")))
-        val expected = Article("slug", "title", "body", updatedAt, Comments(emptyList()), emptyList())
+        val article = Article(
+            "slug",
+            "title",
+            "body",
+            "user@example.com",
+            updatedAt,
+            Comments(emptyList()),
+            listOf(Favorite("user@example.com"))
+        )
+        val expected = Article("slug", "title", "body", "user@example.com", updatedAt, Comments(emptyList()), emptyList())
         assertEquals(expected, article.toggleFavoriteFrom("user@example.com"))
     }
 
@@ -30,7 +46,7 @@ class ArticleTest {
         val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
 
         every { LocalDateTime.now() } returns createdDateTime
-        val expected = Article("title-1", "title 1", "body", createdDateTime, Comments(emptyList()), emptyList())
+        val expected = Article("title-1", "title 1", "body", "user@example.com", createdDateTime, Comments(emptyList()), emptyList())
 
         assertEquals(expected, Article.of("user@example.com", "title 1", "body"))
     }

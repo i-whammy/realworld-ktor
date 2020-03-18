@@ -6,10 +6,7 @@ import com.whammy.article.domain.Comment
 import com.whammy.article.usecase.ArticleUsecase
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
 @Controller
@@ -20,6 +17,12 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
     fun getArticles(): ResponseEntity<ArticlesResponse> {
         return ResponseEntity.ok(
             articleUsecase.getArticlesOrderedByUpdatedDateTime().map { it.convertToArticleResponse() }.let { ArticlesResponse(it) })
+    }
+
+    // TODO add email address as a result of authentication
+    @RequestMapping("/", method = [RequestMethod.POST])
+    fun createArticle(@RequestBody article: ArticleRequest): ResponseEntity<ArticleResponse> {
+        return ResponseEntity.ok(articleUsecase.saveArticle("", article.title, article.body).convertToArticleResponse())
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])
@@ -39,24 +42,31 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
         return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.comment.body).convertToCommentResponse().let { SingleCommentResponse(it) })
     }
 
+    // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/favorite", method = [RequestMethod.POST])
     fun addFavorite(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
         return ResponseEntity.ok(articleUsecase.toggleFavorite("", slug).convertToArticleResponse())
     }
 
+    // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/favorite", method = [RequestMethod.DELETE])
     fun unfavorite(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
         return ResponseEntity.ok(articleUsecase.toggleFavorite("", slug).convertToArticleResponse())
     }
 
     private fun Article.convertToArticleResponse() : ArticleResponse {
-        return ArticleResponse(slug, title, body, updatedAt, favorites.isNotEmpty(), favorites.count())
+        return ArticleResponse(slug, title, body, createdAt, favorites.isNotEmpty(), favorites.count())
     }
 
     private fun Comment.convertToCommentResponse() : CommentResponse {
         return CommentResponse(id, body, createdAt, updatedAt)
     }
 }
+
+data class ArticleRequest(
+    @JsonProperty("title") val title: String,
+    @JsonProperty("body") val body: String
+)
 
 data class ArticlesResponse(
     @JsonProperty("articles") val articles: List<ArticleResponse>

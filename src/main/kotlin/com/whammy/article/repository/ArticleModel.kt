@@ -6,7 +6,8 @@ data class ArticleModel(
     val slug: String,
     val title: String,
     val body: String,
-    val updated: LocalDateTime,
+    val authorEmailAddress: String,
+    val createdAt: LocalDateTime,
     var comments: List<CommentModel>,
     val favorites: List<FavoriteModel>
 )

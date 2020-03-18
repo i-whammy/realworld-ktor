@@ -14,6 +14,7 @@ class ArticlesTest {
                     "title-1",
                     "title1",
                     "body1",
+                    "taro@example.com",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()
@@ -22,6 +23,7 @@ class ArticlesTest {
                     "title-2",
                     "title2",
                     "body2",
+                    "taro@example.com",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()
@@ -34,6 +36,7 @@ class ArticlesTest {
                     "title-2",
                     "title2",
                     "body2",
+                    "taro@example.com",
                     LocalDateTime.of(2020, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()
@@ -42,6 +45,7 @@ class ArticlesTest {
                     "title-1",
                     "title1",
                     "body1",
+                    "taro@example.com",
                     LocalDateTime.of(2019, 1, 1, 0, 0),
                     Comments(emptyList()),
                     emptyList()

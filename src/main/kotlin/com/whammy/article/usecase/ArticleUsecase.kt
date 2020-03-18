@@ -5,6 +5,7 @@ import com.whammy.article.domain.Articles
 import com.whammy.article.domain.Comment
 import com.whammy.article.domain.Comments
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class ArticleUsecase(private val repository: IArticleRepository) {
@@ -27,8 +28,13 @@ class ArticleUsecase(private val repository: IArticleRepository) {
         return newComments.getLatestComment()
     }
 
-    fun toggleFavorite(slug: String, user: String): Article {
+    fun toggleFavorite(slug: String, email: String): Article {
         val article = repository.getArticle(slug)
-        return repository.saveArticle(article.toggleFavoriteFrom(user))
+        return repository.saveArticle(article.toggleFavoriteFrom(email))
+    }
+
+    fun saveArticle(email: String, title: String, body: String): Article {
+        val article = Article.of(email, title, body)
+        return repository.saveArticle(article)
     }
 }
