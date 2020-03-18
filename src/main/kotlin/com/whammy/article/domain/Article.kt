@@ -7,15 +7,16 @@ data class Article(
     val title: String,
     val body: String,
     val updatedAt: LocalDateTime,
-    // TODO use comments
     val comments: Comments,
-    val favorites: List<Favorite>
-) {
+    val favorites: List<Favorite>) {
+    companion object {
+        // TODO care about duplicated slug
+        fun of(authorEmailAddress: String, title: String, body: String): Article =
+            Article(title.replace(" ", "-"), title, body, LocalDateTime.now(), Comments(emptyList()), emptyList())
+    }
+
     fun toggleFavoriteFrom(emailAddress: String): Article {
-        if (this.favorites.contains(Favorite(emailAddress))) {
-            return Article(this.slug, this.title, this.body, this.updatedAt, this.comments, this.favorites.minus(Favorite(emailAddress)))
-        } else {
-            return Article(this.slug, this.title, this.body, this.updatedAt, this.comments, this.favorites.plus(Favorite(emailAddress)))
-        }
+        val newFavorites = if (this.favorites.contains(Favorite(emailAddress))) this.favorites.minus(Favorite(emailAddress)) else this.favorites.plus(Favorite(emailAddress))
+        return Article(this.slug, this.title, this.body, this.updatedAt, this.comments, newFavorites)
     }
 }
