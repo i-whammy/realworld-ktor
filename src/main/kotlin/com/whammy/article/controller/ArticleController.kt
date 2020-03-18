@@ -21,8 +21,8 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
 
     // TODO add email address as a result of authentication
     @RequestMapping("/", method = [RequestMethod.POST])
-    fun createArticle(@RequestBody article: ArticleRequest): ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.saveArticle("", article.title, article.body).convertToArticleResponse())
+    fun createArticle(@RequestBody article: SingleArticleRequest): ResponseEntity<ArticleResponse> {
+        return ResponseEntity.ok(articleUsecase.saveArticle("", article.article.title, article.article.body).convertToArticleResponse())
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])
@@ -62,6 +62,10 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
         return CommentResponse(id, body, createdAt, updatedAt)
     }
 }
+
+data class SingleArticleRequest(
+    @JsonProperty("article") val article: ArticleRequest
+)
 
 data class ArticleRequest(
     @JsonProperty("title") val title: String,
