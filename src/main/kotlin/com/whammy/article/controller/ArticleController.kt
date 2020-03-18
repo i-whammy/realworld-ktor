@@ -1,6 +1,7 @@
 package com.whammy.article.controller
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonRootName
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Comment
 import com.whammy.article.usecase.ArticleUsecase
@@ -21,8 +22,14 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
 
     // TODO add email address as a result of authentication
     @RequestMapping("/", method = [RequestMethod.POST])
-    fun createArticle(@RequestBody article: SingleArticleRequest): ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.saveArticle("", article.article.title, article.article.body).convertToArticleResponse())
+    fun createArticle(@RequestBody article: ArticleRequest): ResponseEntity<ArticleResponse> {
+        return ResponseEntity.ok(articleUsecase.saveArticle("", article.title, article.body).convertToArticleResponse())
+    }
+
+    // TODO add email address as a result of authentication
+    @RequestMapping("/", method = [RequestMethod.POST])
+    fun updateArticle(@RequestBody article: UpdateArticleRequest): ResponseEntity<ArticleResponse> {
+        TODO()
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])
@@ -38,8 +45,8 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
 
     // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/comments", method = [RequestMethod.POST])
-    fun postComment(@PathVariable("slug") slug:String, @RequestBody comment: SingleCommentRequest) : ResponseEntity<SingleCommentResponse> {
-        return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.comment.body).convertToCommentResponse().let { SingleCommentResponse(it) })
+    fun postComment(@PathVariable("slug") slug:String, @RequestBody comment: CommentRequest) : ResponseEntity<CommentResponse> {
+        return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.body).convertToCommentResponse())
     }
 
     // TODO add email address as a result of authentication
@@ -63,11 +70,14 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
     }
 }
 
-data class SingleArticleRequest(
-    @JsonProperty("article") val article: ArticleRequest
+@JsonRootName("article")
+data class ArticleRequest(
+    @JsonProperty("title", required = true) val title: String,
+    @JsonProperty("body", required = true) val body: String
 )
 
-data class ArticleRequest(
+@JsonRootName("article")
+data class UpdateArticleRequest(
     @JsonProperty("title") val title: String,
     @JsonProperty("body") val body: String
 )
@@ -76,6 +86,7 @@ data class ArticlesResponse(
     @JsonProperty("articles") val articles: List<ArticleResponse>
 )
 
+@JsonRootName("article")
 data class ArticleResponse(
     @JsonProperty("slug") val slug: String,
     @JsonProperty("title") val title: String,
@@ -85,22 +96,16 @@ data class ArticleResponse(
     @JsonProperty("favoritesCount") val favoritesCount: Int
 )
 
-data class SingleCommentRequest(
-    @JsonProperty("comment") val comment: CommentRequest
-)
-
+@JsonRootName("comment")
 data class CommentRequest(
-    @JsonProperty("body") val body:String
+    @JsonProperty("body", required = true) val body: String
 )
 
 data class CommentsResponse(
     @JsonProperty("comments") val comments: List<CommentResponse>
 )
 
-data class SingleCommentResponse(
-    @JsonProperty("comment") val comment: CommentResponse
-)
-
+@JsonRootName("comment")
 data class CommentResponse(
     @JsonProperty("id") val id: Int,
     @JsonProperty("body") val body: String,

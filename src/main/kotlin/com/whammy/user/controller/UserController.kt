@@ -1,8 +1,7 @@
 package com.whammy.user.controller
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonPropertyOrder
+import com.fasterxml.jackson.annotation.JsonRootName
 import com.whammy.user.domain.LoginInformation
 import com.whammy.user.usecase.UserUsecase
 import org.springframework.http.ResponseEntity
@@ -13,41 +12,33 @@ import org.springframework.web.bind.annotation.RequestMethod
 
 @Controller
 @RequestMapping("/api/users")
-public class UserController(private val usecase: UserUsecase) {
+class UserController(private val usecase: UserUsecase) {
 
     @RequestMapping("/login", method = [RequestMethod.POST])
     fun login(@RequestBody request: LoginRequest): ResponseEntity<LoginResponse> {
         val user = usecase.login(
             LoginInformation(
-                request.user.email,
-                request.user.password
+                request.email,
+                request.password
             )
         )
         return ResponseEntity.ok(
             LoginResponse(
-                UserInformationResponse(
-                    user.email,
-                    user.token
-                )
+                user.email,
+                user.token
             )
         )
     }
 }
 
+@JsonRootName("user")
 data class LoginRequest(
-    @JsonProperty("user") var user: UserInformationRequest
+    @JsonProperty("email") var email: String,
+    @JsonProperty("password") var password: String
 )
 
-data class UserInformationRequest(
-    @JsonProperty("email") var email: String,
-    @JsonProperty("password") var password: String)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonRootName("user")
 data class LoginResponse(
-    @JsonProperty("user") var user: UserInformationResponse
+    @JsonProperty("email", required = true) var email: String,
+    @JsonProperty("token", required = true) var token: String
 )
-
-@JsonPropertyOrder("email", "token")
-data class UserInformationResponse(
-    @JsonProperty("email") var email: String,
-    @JsonProperty("token") var token: String)
