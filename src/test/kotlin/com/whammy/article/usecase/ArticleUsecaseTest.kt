@@ -2,9 +2,7 @@ package com.whammy.article.usecase
 
 import com.whammy.article.domain.*
 import com.whammy.article.exception.ArticleNotFoundException
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
@@ -191,19 +189,41 @@ class ArticleUsecaseTest {
         verify { repository.getArticle("no-article") }
     }
 
+    // TODO confirm duplicated slug
     @Test
-    internal fun testSaveArticle() {
+    internal fun testCreateNewArticle() {
         val repository = mockk<IArticleRepository>()
         val usecase = ArticleUsecase(repository)
+        mockkObject(Article)
 
         val user = "user@example.com"
         val title = "title 1"
         val body = "body"
         val savedArticle = mockk<Article>()
-        val article = Article("title-1", title, body, "taro@example.com", mockk(), Comments(emptyList()), emptyList())
+        val article = mockk<Article>()
+
+        every { Article.of(user, title, body) } returns article
+        every { repository.saveArticle(article) } returns savedArticle
+
+        assertEquals(savedArticle, usecase.createNewArticle(user, title, body))
+    }
+
+    @Test
+    internal fun testUpdateArticle() {
+        val repository = mockk<IArticleRepository>()
+        val usecase = ArticleUsecase(repository)
+        mockkObject(Article)
+
+        val user = "user@example.com"
+        val title = "title 1"
+        val body = "body"
+        val savedArticle = mockk<Article>()
+        val article = mockk<Article>()
 
         every { repository.saveArticle(article) } returns savedArticle
 
-        assertEquals(savedArticle, usecase.saveArticle(user, title, body))
+        // TODO interfaceをnullableにする
+        // TODO slugで探しに行く
+        assertEquals(savedArticle, usecase.updateArticle(user, title, body))
     }
 }

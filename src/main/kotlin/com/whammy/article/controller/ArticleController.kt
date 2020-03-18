@@ -23,13 +23,13 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
     // TODO add email address as a result of authentication
     @RequestMapping("/", method = [RequestMethod.POST])
     fun createArticle(@RequestBody article: ArticleRequest): ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.saveArticle("", article.title, article.body).convertToArticleResponse())
+        return ResponseEntity.ok(articleUsecase.createNewArticle("", article.title, article.body).convertToArticleResponse())
     }
 
     // TODO add email address as a result of authentication
     @RequestMapping("/", method = [RequestMethod.POST])
     fun updateArticle(@RequestBody article: UpdateArticleRequest): ResponseEntity<ArticleResponse> {
-        TODO()
+        return ResponseEntity.ok(articleUsecase.updateArticle("", article.title, article.body).convertToArticleResponse())
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])

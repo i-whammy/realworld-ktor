@@ -33,8 +33,12 @@ class ArticleUsecase(private val repository: IArticleRepository) {
         return repository.saveArticle(article.toggleFavoriteFrom(email))
     }
 
-    fun saveArticle(email: String, title: String, body: String): Article {
+    fun createNewArticle(email: String, title: String, body: String): Article {
         val article = Article.of(email, title, body)
         return repository.saveArticle(article)
+    }
+
+    fun updateArticle(authorEmailAddress: String, title: String, body: String): Article {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
