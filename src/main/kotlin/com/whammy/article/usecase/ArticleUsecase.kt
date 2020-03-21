@@ -5,7 +5,6 @@ import com.whammy.article.domain.Articles
 import com.whammy.article.domain.Comment
 import com.whammy.article.domain.Comments
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 
 @Service
 class ArticleUsecase(private val repository: IArticleRepository) {
@@ -38,7 +37,8 @@ class ArticleUsecase(private val repository: IArticleRepository) {
         return repository.saveArticle(article)
     }
 
-    fun updateArticle(authorEmailAddress: String, title: String, body: String): Article {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun updateArticle(slug: String, authorEmailAddress: String, title: String?, body: String?): Article {
+        val article = repository.getArticle(slug)
+        return repository.updateArticle(slug, article.update(title, body))
     }
 }

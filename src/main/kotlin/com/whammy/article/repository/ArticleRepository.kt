@@ -56,6 +56,24 @@ class ArticleRepository(private val driver: ArticleDriver):
         return article
     }
 
+    override fun updateArticle(slug: String, article: Article): Article {
+        return driver.updateArticle(slug, article.convertToArticleModel()).convertToArticle()
+    }
+
+    private fun ArticleModel.convertToArticle() = Article(
+        slug,
+        title,
+        body,
+        authorEmailAddress,
+        createdAt,
+        comments.convertToComments(),
+        favorites.convertToFavorites()
+    )
+
+    private fun Article.convertToArticleModel() = ArticleModel(slug, title, body, authorEmailAddress, createdAt,
+        comments.map { CommentModel(it.id, it.body, it.authorEmailAddress, it.createdAt, it.updatedAt) },
+        favorites.map { FavoriteModel(it.userEmailAddress) })
+
     private fun List<CommentModel>.convertToComments() =
         this.map { it.convertToComment() }.let(::Comments)
 

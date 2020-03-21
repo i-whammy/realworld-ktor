@@ -11,4 +11,5 @@ interface IArticleRepository {
     fun getCommentsOfArticle(slug: String): Comments
     fun saveComments(slug: String, comments: Comments): Comments
     fun saveArticle(article: Article): Article
+    fun updateArticle(slug: String, article: Article): Article
 }

@@ -27,9 +27,9 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
     }
 
     // TODO add email address as a result of authentication
-    @RequestMapping("/", method = [RequestMethod.POST])
-    fun updateArticle(@RequestBody article: UpdateArticleRequest): ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.updateArticle("", article.title, article.body).convertToArticleResponse())
+    @RequestMapping("/{slug}", method = [RequestMethod.PUT])
+    fun updateArticle(@PathVariable slug: String, @RequestBody article: UpdateArticleRequest): ResponseEntity<ArticleResponse> {
+        return ResponseEntity.ok(articleUsecase.updateArticle(slug, "", article.title, article.body).convertToArticleResponse())
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])

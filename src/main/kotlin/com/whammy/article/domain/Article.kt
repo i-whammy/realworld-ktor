@@ -21,4 +21,11 @@ data class Article(
         val newFavorites = if (this.favorites.contains(Favorite(emailAddress))) this.favorites.minus(Favorite(emailAddress)) else this.favorites.plus(Favorite(emailAddress))
         return Article(this.slug, this.title, this.body, this.authorEmailAddress, this.createdAt, this.comments, newFavorites)
     }
+
+    fun update(title: String?, body: String?): Article {
+        return if (title != null && body != null) Article(title.replace(" ", "-"), title, body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
+        else if (title != null && body == null) Article(title.replace(" ", "-"), title, this.body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
+        else if (title == null && body != null) Article(this.slug, this.title, body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
+        else this
+    }
 }

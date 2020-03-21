@@ -6,4 +6,5 @@ interface ArticleDriver {
     fun getCommentsOfArticle(slug: String): List<CommentModel>
     fun saveComments(slug: String, commentModels: List<CommentModel>): List<CommentModel>
     fun saveArticle(articleModel: ArticleModel): ArticleModel
+    fun updateArticle(slug: String, articleModel: ArticleModel): ArticleModel
 }

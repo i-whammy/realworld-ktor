@@ -3,11 +3,19 @@ package com.whammy.article.domain
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.unmockkAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 class ArticleTest {
+
+    @AfterEach
+    fun teardown () {
+        unmockkAll()
+    }
+
     @Test
     internal fun testToggleLikeFrom() {
         val updatedAt = mockk<LocalDateTime>()
@@ -49,5 +57,53 @@ class ArticleTest {
         val expected = Article("title-1", "title 1", "body", "user@example.com", createdDateTime, Comments(emptyList()), emptyList())
 
         assertEquals(expected, Article.of("user@example.com", "title 1", "body"))
+    }
+
+    @Test
+    internal fun testUpdateBothTitleAndBody() {
+        val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
+        val authorEmailAddress = "user@example.com"
+        val article = Article("title-1", "title 1", "body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+        val expected = Article("new-title", "new title", "new body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+
+        assertEquals(expected, article.update("new title", "new body"))
+    }
+
+    @Test
+    internal fun testUpdateOnlyTitle() {
+        val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
+        val authorEmailAddress = "user@example.com"
+        val article = Article("title-1", "title 1", "body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+        val expected = Article("new-title", "new title", "body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+
+        assertEquals(expected, article.update("new title", null))
+    }
+
+    @Test
+    internal fun testUpdateOnlyBody() {
+        val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
+        val authorEmailAddress = "user@example.com"
+        val article = Article("title-1", "title 1", "body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+        val expected = Article("title-1", "title 1", "new body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+
+        assertEquals(expected, article.update(null, "new body"))
+    }
+
+    @Test
+    internal fun testUpdateNothing() {
+        val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
+        val authorEmailAddress = "user@example.com"
+        val article = Article("title-1", "title 1", "body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+        val expected = Article("title-1", "title 1", "body",
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+
+        assertEquals(expected, article.update(null, null))
     }
 }

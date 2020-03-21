@@ -3,6 +3,8 @@ package com.whammy.article.usecase
 import com.whammy.article.domain.*
 import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
@@ -10,10 +12,23 @@ import kotlin.test.assertEquals
 
 class ArticleUsecaseTest {
 
+    private lateinit var usecase: ArticleUsecase
+
+    private lateinit var repository: IArticleRepository
+
+    @BeforeEach
+    fun setup() {
+        repository = mockk()
+        usecase = ArticleUsecase(repository)
+    }
+
+    @AfterEach
+    fun teardown() {
+        unmockkAll()
+    }
+
     @Test
     fun testGetArticles() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
         val articles = Articles(
             listOf(
                 Article(
@@ -63,15 +78,11 @@ class ArticleUsecaseTest {
 
         assertEquals(expected, usecase.getArticlesOrderedByUpdatedDateTime())
 
-        verify {
-            repository.getArticles()
-        }
+        verify { repository.getArticles() }
     }
 
     @Test
     fun testGetArticle() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
         val article = Article(
             "title-1",
             "title1",
@@ -91,9 +102,6 @@ class ArticleUsecaseTest {
 
     @Test
     fun testFailedToGetArticle() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
-
         every { repository.getArticle("no-article") } throws ArticleNotFoundException("")
 
         assertThrows<ArticleNotFoundException> { usecase.getArticle("no-article") }
@@ -103,8 +111,6 @@ class ArticleUsecaseTest {
 
     @Test
     fun testGetCommentsOfArticle() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
         val comments = mockk<Comments>()
 
         every { repository.getCommentsOfArticle("slug") } returns comments
@@ -115,8 +121,6 @@ class ArticleUsecaseTest {
     // TODO add comment to an existing article with authentication
     @Test
     fun testAddCommentToArticle() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
         val email = "taro@example.com"
         val slug = "slug-1"
         val body = "body"
@@ -140,8 +144,6 @@ class ArticleUsecaseTest {
 
     @Test
     fun testFailedToAddCommentToArticle() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
         val email = "taro@example.com"
         val slug = "no-article-slug-1"
         val body = "body"
@@ -150,15 +152,11 @@ class ArticleUsecaseTest {
 
         assertThrows<ArticleNotFoundException> { usecase.addComment(email, slug, body) }
 
-        verify {
-            repository.getCommentsOfArticle(slug)
-        }
+        verify { repository.getCommentsOfArticle(slug) }
     }
 
     @Test
     internal fun testToggleFavorite() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
         val slug = "slug"
         val user = "user@example.com"
         val article = mockk<Article>()
@@ -179,9 +177,6 @@ class ArticleUsecaseTest {
 
     @Test
     internal fun testFailedToGetArticleWhenTogglingFavorite() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
-
         every { repository.getArticle("no-article") } throws ArticleNotFoundException("")
 
         assertThrows<ArticleNotFoundException> { usecase.toggleFavorite("no-article", "no-one@example.com") }
@@ -192,8 +187,6 @@ class ArticleUsecaseTest {
     // TODO confirm duplicated slug
     @Test
     internal fun testCreateNewArticle() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
         mockkObject(Article)
 
         val user = "user@example.com"
@@ -206,24 +199,34 @@ class ArticleUsecaseTest {
         every { repository.saveArticle(article) } returns savedArticle
 
         assertEquals(savedArticle, usecase.createNewArticle(user, title, body))
+
+        verify {
+            Article.of(user, title, body)
+            repository.saveArticle(article)
+        }
     }
 
     @Test
     internal fun testUpdateArticle() {
-        val repository = mockk<IArticleRepository>()
-        val usecase = ArticleUsecase(repository)
-        mockkObject(Article)
-
+        val slug = "slug"
         val user = "user@example.com"
-        val title = "title 1"
+        val title = "new title 1"
         val body = "body"
-        val savedArticle = mockk<Article>()
+
         val article = mockk<Article>()
+        val updatedArticle = mockk<Article>()
+        val savedArticle = mockk<Article>()
 
-        every { repository.saveArticle(article) } returns savedArticle
+        every { repository.getArticle(slug) } returns article
+        every { article.update(title, body) } returns updatedArticle
+        every { repository.updateArticle(slug, updatedArticle) } returns savedArticle
 
-        // TODO interfaceをnullableにする
-        // TODO slugで探しに行く
-        assertEquals(savedArticle, usecase.updateArticle(user, title, body))
+        assertEquals(savedArticle, usecase.updateArticle(slug, user, title, body))
+
+        verify {
+            repository.getArticle(slug)
+            article.update(title,body)
+            repository.updateArticle(slug,updatedArticle)
+        }
     }
 }

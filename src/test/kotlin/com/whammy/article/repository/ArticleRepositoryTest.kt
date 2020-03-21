@@ -5,16 +5,26 @@ import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 class ArticleRepositoryTest {
+
+    private lateinit var driver: ArticleDriver
+
+    private lateinit var repository: ArticleRepository
+
+    @BeforeEach
+    fun setup() {
+        driver = mockk()
+        repository = ArticleRepository(driver)
+    }
+
     @Test
     fun testGetArticles() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
         val articles = Articles(
             listOf(
                 Article(
@@ -48,8 +58,6 @@ class ArticleRepositoryTest {
 
     @Test
     fun testGetArticle() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
         val article = Article(
             "title-1",
             "title1",
@@ -73,22 +81,21 @@ class ArticleRepositoryTest {
         every { driver.getArticle("title-1") } returns articleModel
 
         assertEquals(article, repository.getArticle("title-1"))
+
+        verify { driver.getArticle("title-1") }
     }
 
     @Test
     fun testFailedToGetArticle() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
-
         every { driver.getArticle("no-article") } returns null
 
         assertThrows<ArticleNotFoundException> { repository.getArticle("no-article") }
+
+        verify { driver.getArticle("no-article") }
     }
 
     @Test
     fun testGetCommentsOfArticle() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
         val models = listOf(CommentModel(1, "body1", "taro@example.com",LocalDateTime.of(2020,1,1,10,0)))
         val comments = Comments(listOf(Comment(1, "body1", "taro@example.com", LocalDateTime.of(2020,1,1,10,0))))
 
@@ -104,8 +111,6 @@ class ArticleRepositoryTest {
 
     @Test
     fun testGetEmptyCommentsOfArticle() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
         val models = emptyList<CommentModel>()
 
         every { driver.getArticle("slug1") } returns mockk()
@@ -120,10 +125,6 @@ class ArticleRepositoryTest {
 
     @Test
     fun testGetCommentsFailedWhenNoArticleExists() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
-        val models = emptyList<CommentModel>()
-
         every { driver.getArticle("no-article") } returns null
 
         assertThrows<ArticleNotFoundException> { repository.getCommentsOfArticle("no-article") }
@@ -133,8 +134,6 @@ class ArticleRepositoryTest {
 
     @Test
     internal fun testSaveComments() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
         val slug = "slug"
         val models = listOf(CommentModel(1, "body1", "taro@example.com", LocalDateTime.of(2020,1,1,10,0)))
         val comments = Comments(listOf(Comment(1, "body1","taro@example.com", LocalDateTime.of(2020,1,1,10,0))))
@@ -148,8 +147,6 @@ class ArticleRepositoryTest {
 
     @Test
     internal fun testSaveArticle() {
-        val driver = mockk<ArticleDriver>()
-        val repository = ArticleRepository(driver)
         val article = Article(
             "slug",
             "title",
@@ -170,5 +167,31 @@ class ArticleRepositoryTest {
         )
         every { driver.saveArticle(model) } returns model
         assertEquals(article, repository.saveArticle(article))
+        verify { driver.saveArticle(model) }
+    }
+
+    @Test
+    internal fun testUpdateArticle() {
+        val article = Article(
+            "slug",
+            "title",
+            "body",
+            "taro@example.com",
+            LocalDateTime.of(2020,1,1,12,0),
+            Comments(listOf(Comment(1,"comment body", "user@example.com", LocalDateTime.of(2020,2,1,12,0)))),
+            listOf(Favorite("favorite@example.com"))
+        )
+        val model = ArticleModel(
+            "slug",
+            "title",
+            "body",
+            "taro@example.com",
+            LocalDateTime.of(2020,1,1,12,0),
+            listOf(CommentModel(1,"comment body", "user@example.com", LocalDateTime.of(2020,2,1,12,0))),
+            listOf(FavoriteModel("favorite@example.com"))
+        )
+        every { driver.updateArticle("old-slug", model) } returns model
+        assertEquals(article, repository.updateArticle("old-slug", article))
+        verify { driver.updateArticle("old-slug", model) }
     }
 }
