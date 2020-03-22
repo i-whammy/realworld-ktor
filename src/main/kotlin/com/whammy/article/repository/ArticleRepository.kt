@@ -60,6 +60,10 @@ class ArticleRepository(private val driver: ArticleDriver):
         return driver.updateArticle(slug, article.convertToArticleModel()).convertToArticle()
     }
 
+    override fun articleExists(slug: String): Boolean {
+        return driver.getArticle(slug) != null
+    }
+
     private fun ArticleModel.convertToArticle() = Article(
         slug,
         title,

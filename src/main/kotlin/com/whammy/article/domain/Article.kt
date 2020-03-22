@@ -12,7 +12,6 @@ data class Article(
     val favorites: List<Favorite>
 ) {
     companion object {
-        // TODO care about duplicated slug
         fun of(authorEmailAddress: String, title: String, body: String): Article =
             Article(title.replace(" ", "-"), title, body, authorEmailAddress, LocalDateTime.now(), Comments(emptyList()), emptyList())
     }
@@ -27,5 +26,9 @@ data class Article(
         else if (title != null && body == null) Article(title.replace(" ", "-"), title, this.body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
         else if (title == null && body != null) Article(this.slug, this.title, body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
         else this
+    }
+
+    fun assignNewSlug(): Article {
+        return Article(this.slug + "-" + LocalDateTime.now().toString(), this.title, this.body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
     }
 }

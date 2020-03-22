@@ -34,7 +34,12 @@ class ArticleUsecase(private val repository: IArticleRepository) {
 
     fun createNewArticle(email: String, title: String, body: String): Article {
         val article = Article.of(email, title, body)
-        return repository.saveArticle(article)
+        if (repository.articleExists(article.slug)) {
+            val newArticle = article.assignNewSlug()
+            return repository.saveArticle(newArticle)
+        } else {
+            return repository.saveArticle(article)
+        }
     }
 
     fun updateArticle(slug: String, authorEmailAddress: String, title: String?, body: String?): Article {

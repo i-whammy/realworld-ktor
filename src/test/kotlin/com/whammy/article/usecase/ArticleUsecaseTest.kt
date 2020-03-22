@@ -184,25 +184,58 @@ class ArticleUsecaseTest {
         verify { repository.getArticle("no-article") }
     }
 
-    // TODO confirm duplicated slug
     @Test
     internal fun testCreateNewArticle() {
         mockkObject(Article)
 
         val user = "user@example.com"
+        val slug = "title-1"
         val title = "title 1"
         val body = "body"
         val savedArticle = mockk<Article>()
         val article = mockk<Article>()
 
         every { Article.of(user, title, body) } returns article
+        every { article.slug } returns slug
+        every { repository.articleExists(slug) } returns false
         every { repository.saveArticle(article) } returns savedArticle
 
         assertEquals(savedArticle, usecase.createNewArticle(user, title, body))
 
         verify {
             Article.of(user, title, body)
+            article.slug
             repository.saveArticle(article)
+            repository.articleExists(slug)
+        }
+    }
+
+    @Test
+    internal fun testCreateNewArticleWhenSlugAlreadyExists() {
+        mockkObject(Article)
+
+        val user = "user@example.com"
+        val slug = "title-1"
+        val title = "title 1"
+        val body = "body"
+        val savedArticle = mockk<Article>()
+        val article = mockk<Article>()
+        val newArticle = mockk<Article>()
+
+        every { Article.of(user, title, body) } returns article
+        every { article.slug } returns slug
+        every { repository.articleExists(slug) } returns true
+        every { article.assignNewSlug() } returns newArticle
+        every { repository.saveArticle(newArticle) } returns savedArticle
+
+        assertEquals(savedArticle, usecase.createNewArticle(user, title, body))
+
+        verify {
+            Article.of(user, title, body)
+            article.slug
+            repository.articleExists(slug)
+            article.assignNewSlug()
+            repository.saveArticle(newArticle)
         }
     }
 
