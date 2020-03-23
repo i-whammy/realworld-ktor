@@ -13,4 +13,5 @@ interface IArticleRepository {
     fun saveArticle(article: Article): Article
     fun updateArticle(slug: String, article: Article): Article
     fun articleExists(slug: String): Boolean
+    fun deleteArticle(slug: String)
 }

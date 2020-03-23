@@ -64,6 +64,10 @@ class ArticleRepository(private val driver: ArticleDriver):
         return driver.getArticle(slug) != null
     }
 
+    override fun deleteArticle(slug: String) {
+        driver.deleteArticle(slug)
+    }
+
     private fun ArticleModel.convertToArticle() = Article(
         slug,
         title,

@@ -46,4 +46,8 @@ class ArticleUsecase(private val repository: IArticleRepository) {
         val article = repository.getArticle(slug)
         return repository.updateArticle(slug, article.update(title, body))
     }
+
+    fun delete(slug: String) {
+        if (repository.articleExists(slug)) repository.deleteArticle(slug)
+    }
 }

@@ -62,4 +62,8 @@ class InMemoryArticleDriver: ArticleDriver {
         articles.add(articleModel)
         return articleModel
     }
+
+    override fun deleteArticle(slug: String) {
+        articles.removeIf { slug == it.slug }
+    }
 }

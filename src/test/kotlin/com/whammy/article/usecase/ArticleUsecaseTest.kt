@@ -262,4 +262,18 @@ class ArticleUsecaseTest {
             repository.updateArticle(slug,updatedArticle)
         }
     }
+
+    @Test
+    internal fun testDelete() {
+        val slug = "slug"
+        every { repository.articleExists(slug) } returns true
+        every { repository.deleteArticle(slug) } just runs
+
+        usecase.delete(slug)
+
+        verify {
+            repository.articleExists(slug)
+            repository.deleteArticle(slug)
+        }
+    }
 }
