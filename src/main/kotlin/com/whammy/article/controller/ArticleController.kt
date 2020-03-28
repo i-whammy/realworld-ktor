@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRootName
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Comment
 import com.whammy.article.usecase.ArticleUsecase
+import com.whammy.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
@@ -12,7 +13,7 @@ import java.time.LocalDateTime
 
 @Controller
 @RequestMapping("/api/articles")
-class ArticleController(private val articleUsecase: ArticleUsecase) {
+class ArticleController(private val articleUsecase: ArticleUsecase, private val userService: UserService) {
 
     @RequestMapping("/", method = [RequestMethod.GET])
     fun getArticles(): ResponseEntity<ArticlesResponse> {
@@ -20,16 +21,16 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
             articleUsecase.getArticlesOrderedByUpdatedDateTime().map { it.convertToArticleResponse() }.let { ArticlesResponse(it) })
     }
 
-    // TODO add email address as a result of authentication
     @RequestMapping("/", method = [RequestMethod.POST])
-    fun createArticle(@RequestBody article: ArticleRequest): ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.createNewArticle("", article.title, article.body).convertToArticleResponse())
+    fun createArticle(@RequestHeader("Authorization", required = true) authorizationHeader: String, @RequestBody article: ArticleRequest): ResponseEntity<ArticleResponse> {
+        val userId = userService.getUserId(authorizationHeader)
+        return ResponseEntity.ok(articleUsecase.createNewArticle(userId, article.title, article.body).convertToArticleResponse())
     }
 
-    // TODO add email address as a result of authentication
     @RequestMapping("/{slug}", method = [RequestMethod.PUT])
-    fun updateArticle(@PathVariable slug: String, @RequestBody article: UpdateArticleRequest): ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.updateArticle(slug, "", article.title, article.body).convertToArticleResponse())
+    fun updateArticle(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable slug: String, @RequestBody article: UpdateArticleRequest): ResponseEntity<ArticleResponse> {
+        val userId = userService.getUserId(authorizationHeader)
+        return ResponseEntity.ok(articleUsecase.updateArticle(slug, userId, article.title, article.body).convertToArticleResponse())
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.GET])
@@ -43,22 +44,22 @@ class ArticleController(private val articleUsecase: ArticleUsecase) {
             articleUsecase.getCommentsOfArticle(slug).map { it.convertToCommentResponse() }.let { CommentsResponse(it) })
     }
 
-    // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/comments", method = [RequestMethod.POST])
-    fun postComment(@PathVariable("slug") slug:String, @RequestBody comment: CommentRequest) : ResponseEntity<CommentResponse> {
-        return ResponseEntity.ok(articleUsecase.addComment("", slug, comment.body).convertToCommentResponse())
+    fun postComment(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable("slug") slug:String, @RequestBody comment: CommentRequest) : ResponseEntity<CommentResponse> {
+        val userId = userService.getUserId(authorizationHeader)
+        return ResponseEntity.ok(articleUsecase.addComment(userId, slug, comment.body).convertToCommentResponse())
     }
 
-    // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/favorite", method = [RequestMethod.POST])
-    fun addFavorite(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.toggleFavorite("", slug).convertToArticleResponse())
+    fun addFavorite(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
+        val userId = userService.getUserId(authorizationHeader)
+        return ResponseEntity.ok(articleUsecase.toggleFavorite(userId, slug).convertToArticleResponse())
     }
 
-    // TODO add email address as a result of authentication
     @RequestMapping("/{slug}/favorite", method = [RequestMethod.DELETE])
-    fun unfavorite(@PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
-        return ResponseEntity.ok(articleUsecase.toggleFavorite("", slug).convertToArticleResponse())
+    fun unfavorite(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
+        val userId = userService.getUserId(authorizationHeader)
+        return ResponseEntity.ok(articleUsecase.toggleFavorite(userId, slug).convertToArticleResponse())
     }
 
     @RequestMapping("/{slug}", method = [RequestMethod.DELETE])
