@@ -47,12 +47,3 @@ class UserService {
         else throw AuthorizationFailureException("Authorization Failed.")
     }
 }
-
-fun main() {
-    val (email, password, token) = UserService().issueNewToken(User("hoge", "fuga", "-"))
-    val verification = JWT.require(Algorithm.HMAC256("VGhpcyBrZXkgbXVzdCBub3QgYmUgZGVjb2RlZA=="))
-        .withIssuer("Real World App")
-        .build()
-    val decodedJWT = verification.verify(token)
-    println(decodedJWT.getClaim("userId").asString())
-}
