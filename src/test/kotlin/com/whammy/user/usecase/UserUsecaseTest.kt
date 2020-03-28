@@ -3,18 +3,18 @@ package com.whammy.user.usecase
 import com.whammy.user.domain.LoginInformation
 import com.whammy.user.domain.User
 import com.whammy.user.exception.LoginFailureException
-import com.whammy.user.usecase.IUserRepository
-import com.whammy.user.usecase.UserUsecase
+import com.whammy.user.service.UserService
 import io.mockk.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class UserUsecaseTest {
-
     private val userRepository = mockk<IUserRepository>()
 
-    private val usecase = UserUsecase(userRepository)
+    private val userService = mockk<UserService>()
+
+    private val usecase = UserUsecase(userRepository, userService)
 
     @Test
     fun testLogin() {
@@ -26,7 +26,7 @@ class UserUsecaseTest {
 
         every { userRepository.isUserExists(email, password) } returns true
         every { userRepository.findUserByEmailAddress(email) } returns user
-        every { user.refreshToken() } returns refreshedUser
+        every { userService.issueNewToken(user) } returns refreshedUser
         every { userRepository.save(refreshedUser) } just Runs
 
         assertEquals(refreshedUser, usecase.login(loginInformation))
@@ -34,7 +34,7 @@ class UserUsecaseTest {
         verify {
             userRepository.isUserExists(email, password)
             userRepository.findUserByEmailAddress(email)
-            user.refreshToken()
+            userService.issueNewToken(user)
             userRepository.save(refreshedUser)
         }
     }
