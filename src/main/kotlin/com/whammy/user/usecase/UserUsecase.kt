@@ -4,9 +4,7 @@ import com.whammy.user.exception.LoginFailureException
 import com.whammy.user.domain.LoginInformation
 import com.whammy.user.domain.User
 import com.whammy.user.service.UserService
-import org.springframework.stereotype.Service
 
-@Service
 class UserUsecase(private val userRepository: IUserRepository, private val userService: UserService) {
     fun login(loginInformation: LoginInformation): User {
         val email = loginInformation.email

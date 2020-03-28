@@ -4,10 +4,8 @@ import com.whammy.article.repository.ArticleDriver
 import com.whammy.article.repository.ArticleModel
 import com.whammy.article.repository.CommentModel
 import com.whammy.article.repository.FavoriteModel
-import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 
-@Component
 class InMemoryArticleDriver: ArticleDriver {
     private val articles = mutableListOf(
         ArticleModel(
