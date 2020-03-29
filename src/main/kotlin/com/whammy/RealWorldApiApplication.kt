@@ -1,5 +1,6 @@
 package com.whammy
 
+import com.whammy.user.handler.userHandler
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -19,8 +20,9 @@ fun main(args: Array<String>) {
         }
         routing {
             get("/systems/ping") {
-                call.respond(mapOf("OK" to "Fuga"))
+                call.respond(mapOf("message" to "pong"))
             }
+            // userHandler(userUsecase)
         }
     }.start(wait = true)
 }
