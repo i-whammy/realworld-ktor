@@ -1,8 +1,8 @@
 package com.whammy.article.usecase
 
-import InvalidRequestException
 import com.whammy.article.domain.*
 import com.whammy.article.exception.ArticleNotFoundException
+import com.whammy.article.exception.InvalidRequestException
 import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

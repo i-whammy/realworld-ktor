@@ -1,10 +1,10 @@
 package com.whammy.article.usecase
 
-import InvalidRequestException
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
 import com.whammy.article.domain.Comment
 import com.whammy.article.domain.Comments
+import com.whammy.article.exception.InvalidRequestException
 
 class ArticleUsecase(private val repository: IArticleRepository) {
     fun getArticlesOrderedByUpdatedDateTime(): Articles {
