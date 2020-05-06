@@ -84,7 +84,7 @@ fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserServic
 
 
 private fun Article.convertToArticleResponse(): ArticleResponse {
-    return ArticleResponse(slug, title, body, createdAt, favorites.isNotEmpty(), favorites.count())
+    return ArticleResponse(slug, title, body, createdAt, updatedAt, favorites.isNotEmpty(), favorites.count())
 }
 
 private fun Comment.convertToCommentResponse(): CommentResponse {
@@ -112,7 +112,8 @@ data class ArticleResponse(
     val slug: String,
     val title: String,
     val body: String,
-    val updatedAt: LocalDateTime,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime?,
     val favorited: Boolean,
     val favoritesCount: Int
 )

@@ -62,11 +62,14 @@ class ArticleTest {
     @Test
     internal fun testUpdateBothTitleAndBody() {
         val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
+        val updatedTime = mockk<LocalDateTime>()
+        mockkStatic(LocalDateTime::class)
+        every { LocalDateTime.now() } returns updatedTime
         val authorEmailAddress = "user@example.com"
         val article = Article("title-1", "title 1", "body",
             authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
         val expected = Article("new-title", "new title", "new body",
-            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList(), updatedTime)
 
         assertEquals(expected, article.update("new title", "new body"))
     }
@@ -74,11 +77,15 @@ class ArticleTest {
     @Test
     internal fun testUpdateOnlyTitle() {
         val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
+        val updatedTime = mockk<LocalDateTime>()
+        mockkStatic(LocalDateTime::class)
+        every { LocalDateTime.now() } returns updatedTime
+
         val authorEmailAddress = "user@example.com"
         val article = Article("title-1", "title 1", "body",
             authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
         val expected = Article("new-title", "new title", "body",
-            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList(), updatedTime)
 
         assertEquals(expected, article.update("new title", null))
     }
@@ -86,11 +93,15 @@ class ArticleTest {
     @Test
     internal fun testUpdateOnlyBody() {
         val createdDateTime = LocalDateTime.of(2020, 1, 1, 1, 0)
+        val updatedTime = mockk<LocalDateTime>()
+        mockkStatic(LocalDateTime::class)
+        every { LocalDateTime.now() } returns updatedTime
+
         val authorEmailAddress = "user@example.com"
         val article = Article("title-1", "title 1", "body",
             authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
         val expected = Article("title-1", "title 1", "new body",
-            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
+            authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList(), updatedTime)
 
         assertEquals(expected, article.update(null, "new body"))
     }

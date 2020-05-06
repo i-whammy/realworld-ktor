@@ -9,7 +9,8 @@ data class Article(
     val authorEmailAddress: String,
     val createdAt: LocalDateTime,
     val comments: Comments,
-    val favorites: List<Favorite>
+    val favorites: List<Favorite>,
+    val updatedAt: LocalDateTime? = null
 ) {
     companion object {
         fun of(authorEmailAddress: String, title: String, body: String): Article =
@@ -22,9 +23,9 @@ data class Article(
     }
 
     fun update(title: String?, body: String?): Article {
-        return if (title != null && body != null) Article(title.replace(" ", "-"), title, body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
-        else if (title != null && body == null) Article(title.replace(" ", "-"), title, this.body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
-        else if (title == null && body != null) Article(this.slug, this.title, body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
+        return if (title != null && body != null) Article(title.replace(" ", "-"), title, body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites, LocalDateTime.now())
+        else if (title != null && body == null) Article(title.replace(" ", "-"), title, this.body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites, LocalDateTime.now())
+        else if (title == null && body != null) Article(this.slug, this.title, body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites, LocalDateTime.now())
         else this
     }
 

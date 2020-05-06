@@ -7,29 +7,11 @@ import com.whammy.article.usecase.IArticleRepository
 class ArticleRepository(private val driver: ArticleDriver):
     IArticleRepository {
     override fun getArticles(): Articles {
-        return Articles(driver.getArticles().map {
-            Article(
-                it.slug,
-                it.title,
-                it.body,
-                it.authorEmailAddress,
-                it.createdAt,
-                it.comments.convertToComments(),
-                it.favorites.convertToFavorites()
-            )
-        })
+        return Articles(driver.getArticles().map { it.convertToArticle() })
     }
 
     override fun getArticle(slug: String): Article {
-        return driver.getArticle(slug)?.let { Article(
-            it.slug,
-            it.title,
-            it.body,
-            it.authorEmailAddress,
-            it.createdAt,
-            it.comments.convertToComments(),
-            it.favorites.convertToFavorites()
-        ) }
+        return driver.getArticle(slug)?.let { it.convertToArticle() }
             ?: throw ArticleNotFoundException("Article not found. slug = $slug")
     }
 
@@ -73,12 +55,13 @@ class ArticleRepository(private val driver: ArticleDriver):
         authorEmailAddress,
         createdAt,
         comments.convertToComments(),
-        favorites.convertToFavorites()
+        favorites.convertToFavorites(),
+        updatedAt
     )
 
     private fun Article.convertToArticleModel() = ArticleModel(slug, title, body, authorEmailAddress, createdAt,
         comments.map { CommentModel(it.id, it.body, it.authorEmailAddress, it.createdAt, it.updatedAt) },
-        favorites.map { FavoriteModel(it.userEmailAddress) })
+        favorites.map { FavoriteModel(it.userEmailAddress) }, updatedAt)
 
     private fun List<CommentModel>.convertToComments() =
         this.map { it.convertToComment() }.let(::Comments)
