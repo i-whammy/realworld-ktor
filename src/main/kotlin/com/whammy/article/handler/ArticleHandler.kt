@@ -101,8 +101,8 @@ data class ArticleRequest(
 )
 
 data class UpdateArticleRequest(
-    @JsonProperty("title") val title: String,
-    @JsonProperty("body") val body: String
+    val title: String,
+    val body: String
 )
 
 data class ArticlesResponse(
@@ -120,19 +120,17 @@ data class ArticleResponse(
     val favoritesCount: Int
 )
 
-@JsonRootName("comment")
 data class CommentRequest(
-    @JsonProperty("body", required = true) val body: String
+    val body: String
 )
 
 data class CommentsResponse(
-    @JsonProperty("comments") val comments: List<CommentResponse>
+    val comments: List<CommentResponse>
 )
 
-@JsonRootName("comment")
 data class CommentResponse(
-    @JsonProperty("id") val id: Int,
-    @JsonProperty("body") val body: String,
-    @JsonProperty("createdAt") val createdAt: LocalDateTime,
-    @JsonProperty("updatedAt") val updatedAt: LocalDateTime?
+    val id: Int,
+    val body: String,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime?
 )
