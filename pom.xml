@@ -80,6 +80,11 @@
             <version>${ktor.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.kodein.di</groupId>
+            <artifactId>kodein-di-generic-jvm</artifactId>
+            <version>6.5.5</version>
+        </dependency>
     </dependencies>
 
     <build>
