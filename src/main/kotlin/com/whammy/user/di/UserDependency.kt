@@ -11,7 +11,7 @@ import org.kodein.di.generic.bind
 import org.kodein.di.generic.instance
 import org.kodein.di.generic.singleton
 
-val kodein = Kodein{
+val userDependency = Kodein{
     bind<UserDriver>() with singleton { InMemoryUserDriver() }
     bind<UserService>() with singleton { UserService() }
     bind<IUserRepository>() with singleton { UserRepository(instance()) }

@@ -85,6 +85,11 @@
             <artifactId>kodein-di-generic-jvm</artifactId>
             <version>6.5.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.11.0</version>
+        </dependency>
     </dependencies>
 
     <build>
