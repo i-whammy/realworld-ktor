@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ArticleTest {
 
@@ -116,5 +118,23 @@ class ArticleTest {
             authorEmailAddress, createdDateTime, Comments(emptyList()), emptyList())
 
         assertEquals(expected, article.update(null, null))
+    }
+
+    @Test
+    internal fun testIsCreatedByReturnsTrueWhenTheAuthorAndUserIdAreTheSame() {
+        val article = Article(
+            "title-1", "title 1", "body",
+            "authorEmailAddress", LocalDateTime.now(), Comments(emptyList()), emptyList()
+        )
+        assertTrue { article.isCreatedBy("authorEmailAddress") }
+    }
+
+    @Test
+    internal fun testIsCreatedByReturnsFalseWhenTheAuthorAndUserIdAreNotTheSame() {
+        val article = Article(
+            "title-1", "title 1", "body",
+            "authorEmailAddress", LocalDateTime.now(), Comments(emptyList()), emptyList()
+        )
+        assertFalse { article.isCreatedBy("differentEmailAddress") }
     }
 }

@@ -45,6 +45,13 @@ fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserServic
                 call.respond(articleUsecase.getArticle(slug).convertToArticleResponse())
             }
 
+            delete("/") {
+                val slug = call.parameters["slug"]!!
+                val authorizationHeader = call.request.headers["Authorization"]!!
+                val userId = userService.getUserId(authorizationHeader)
+                articleUsecase.delete(slug, userId)
+            }
+
             route("/comments") {
                 get("/") {
                     val slug = call.parameters["slug"]!!
@@ -77,12 +84,6 @@ fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserServic
             }
         }
     }
-
-//
-//    @RequestMapping("/{slug}", method = [RequestMethod.DELETE])
-//    fun deleteArticle(@PathVariable("slug") slug: String) {
-//        articleUsecase.delete(slug)
-//    }
 }
 
 

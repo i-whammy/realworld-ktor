@@ -32,4 +32,6 @@ data class Article(
     fun assignNewSlug(): Article {
         return Article(this.slug + "-" + LocalDateTime.now().toString(), this.title, this.body, this.authorEmailAddress, this.createdAt, this.comments, this.favorites)
     }
+
+    fun isCreatedBy(userId: String) = userId == authorEmailAddress
 }

@@ -1,5 +1,6 @@
 package com.whammy.article.usecase
 
+import InvalidRequestException
 import com.whammy.article.domain.Article
 import com.whammy.article.domain.Articles
 import com.whammy.article.domain.Comment
@@ -45,7 +46,9 @@ class ArticleUsecase(private val repository: IArticleRepository) {
         return repository.updateArticle(slug, article.update(title, body))
     }
 
-    fun delete(slug: String) {
-        if (repository.articleExists(slug)) repository.deleteArticle(slug)
+    fun delete(slug: String, userId: String) {
+        if (repository.getArticle(slug).isCreatedBy(userId)) {
+            repository.deleteArticle(slug)
+        } else throw InvalidRequestException("The request user $userId does not coincides with the article $slug author.")
     }
 }

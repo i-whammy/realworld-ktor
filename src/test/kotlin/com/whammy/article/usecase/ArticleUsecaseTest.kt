@@ -1,5 +1,6 @@
 package com.whammy.article.usecase
 
+import InvalidRequestException
 import com.whammy.article.domain.*
 import com.whammy.article.exception.ArticleNotFoundException
 import io.mockk.*
@@ -118,7 +119,6 @@ class ArticleUsecaseTest {
         verify { repository.getCommentsOfArticle("slug") }
     }
 
-    // TODO add comment to an existing article with authentication
     @Test
     fun testAddCommentToArticle() {
         val email = "taro@example.com"
@@ -264,16 +264,36 @@ class ArticleUsecaseTest {
     }
 
     @Test
-    internal fun testDelete() {
+    internal fun testDeleteWhenTheRequestingUserCoincidesWithArticleAuthor() {
         val slug = "slug"
-        every { repository.articleExists(slug) } returns true
+        val userId = "userId"
+        val article = mockk<Article>()
+        every { repository.getArticle(slug) } returns article
+        every { article.isCreatedBy(userId) } returns true
         every { repository.deleteArticle(slug) } just runs
 
-        usecase.delete(slug)
+        usecase.delete(slug, userId)
 
         verify {
-            repository.articleExists(slug)
+            repository.getArticle(slug)
+            article.isCreatedBy(userId)
             repository.deleteArticle(slug)
+        }
+    }
+
+    @Test
+    internal fun testNotDeletWhenTheRequestingUserCoincidesWithArticleAuthor() {
+        val slug = "slug"
+        val userId = "userId"
+        val article = mockk<Article>()
+        every { repository.getArticle(slug) } returns article
+        every { article.isCreatedBy(userId) } returns false
+
+        assertThrows<InvalidRequestException> { usecase.delete(slug, userId) }
+
+        verify {
+            repository.getArticle(slug)
+            article.isCreatedBy(userId)
         }
     }
 }
