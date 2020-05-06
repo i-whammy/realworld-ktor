@@ -9,48 +9,45 @@ import com.whammy.user.service.UserService
 import io.ktor.application.call
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.put
+import io.ktor.routing.*
 import java.time.LocalDateTime
 
 fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserService) {
-    get("/api/articles") {
-        call.respond(
-            articleUsecase.getArticlesOrderedByUpdatedDateTime().map { it.convertToArticleResponse() }
-                .let { ArticlesResponse(it, it.size) })
+    route("/api/articles") {
+        get("/") {
+            call.respond(
+                articleUsecase.getArticlesOrderedByUpdatedDateTime().map { it.convertToArticleResponse() }
+                    .let { ArticlesResponse(it, it.size) })
+        }
+
+        post("/") {
+            val request = call.receive<ArticleRequest>()
+            val authorizationHeader = call.request.headers["Authorization"]!!
+            val userId = userService.getUserId(authorizationHeader)
+            call.respond(
+                articleUsecase.createNewArticle(userId, request.title, request.body).convertToArticleResponse()
+            )
+        }
+
+        route("/{slug}") {
+            put("/") {
+                val request = call.receive<ArticleRequest>()
+                val slug = call.parameters["slug"]!!
+                val authorizationHeader = call.request.headers["Authorization"]!!
+                val userId = userService.getUserId(authorizationHeader)
+                call.respond(
+                    articleUsecase.updateArticle(slug, userId, request.title, request.body).convertToArticleResponse()
+                )
+            }
+
+            get("/") {
+                val slug = call.parameters["slug"]!!
+                call.respond(articleUsecase.getArticle(slug).convertToArticleResponse())
+            }
+        }
     }
 
-    post("/api/articles") {
-        val request = call.receive<ArticleRequest>()
-        val authorizationHeader = call.request.headers["Authorization"]!!
-        val userId = userService.getUserId(authorizationHeader)
-        call.respond(
-            articleUsecase.createNewArticle(userId, request.title, request.body).convertToArticleResponse()
-        )
-    }
 
-    put("/api/articles/{slug}") {
-        val request = call.receive<ArticleRequest>()
-        val slug = call.parameters["slug"]!!
-        val authorizationHeader = call.request.headers["Authorization"]!!
-        val userId = userService.getUserId(authorizationHeader)
-        call.respond(
-            articleUsecase.updateArticle(slug, userId, request.title, request.body).convertToArticleResponse()
-        )
-    }
-
-//    @RequestMapping("/{slug}", method = [RequestMethod.PUT])
-//    fun updateArticle(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable slug: String, @RequestBody article: UpdateArticleRequest): ResponseEntity<ArticleResponse> {
-//        val userId = userService.getUserId(authorizationHeader)
-//        return ResponseEntity.ok(articleUsecase.updateArticle(slug, userId, article.title, article.body).convertToArticleResponse())
-//    }
-//
-//    @RequestMapping("/{slug}", method = [RequestMethod.GET])
-//    fun getSingleArticle(@PathVariable("slug") slug: String): ResponseEntity<ArticleResponse> {
-//        return ResponseEntity.ok(articleUsecase.getArticle(slug).convertToArticleResponse())
-//    }
 //
 //    @RequestMapping("/{slug}/comments", method = [RequestMethod.GET])
 //    fun getComments(@PathVariable("slug") slug: String): ResponseEntity<CommentsResponse> {
