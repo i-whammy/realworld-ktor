@@ -6,15 +6,25 @@ import com.whammy.article.domain.Article
 import com.whammy.article.usecase.ArticleUsecase
 import com.whammy.user.service.UserService
 import io.ktor.application.call
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
+import io.ktor.routing.post
 import java.time.LocalDateTime
 
 fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserService) {
     get("/api/articles") {
         call.respond(
             articleUsecase.getArticlesOrderedByUpdatedDateTime().map { it.convertToArticleResponse() }.let{ ArticlesResponse(it, it.size) })
+    }
+
+    post("/api/articles") {
+        val request = call.receive<ArticleRequest>()
+        val authorizationHeader = call.request.headers["Authorization"]!!
+        val userId = userService.getUserId(authorizationHeader)
+        call.respond(
+            articleUsecase.createNewArticle(userId, request.title, request.body).convertToArticleResponse())
     }
 //
 //    @RequestMapping("/", method = [RequestMethod.POST])
