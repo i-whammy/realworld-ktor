@@ -12,7 +12,7 @@ fun Route.userHandler(userUsecase: UserUsecase) {
     post("api/users/login") {
         val request = call.receive<LoginRequest>()
         val user = userUsecase.login(LoginInformation(request.user.email, request.user.password))
-        call.respond(LoginResponse(LoginResponse.UserResponse(user.email, user.password)))
+        call.respond(LoginResponse(LoginResponse.UserResponse(user.email, user.token)))
     }
 }
 
