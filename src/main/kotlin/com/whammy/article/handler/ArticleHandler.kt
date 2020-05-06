@@ -59,21 +59,25 @@ fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserServic
                     call.respond(articleUsecase.addComment(userId, slug, request.body).convertToCommentResponse())
                 }
             }
+
+            route("/favorite") {
+                post("/") {
+                    val slug = call.parameters["slug"]!!
+                    val authorizationHeader = call.request.headers["Authorization"]!!
+                    val userId = userService.getUserId(authorizationHeader)
+                    call.respond(articleUsecase.toggleFavorite(slug, userId).convertToArticleResponse())
+                }
+
+                delete("/") {
+                    val slug = call.parameters["slug"]!!
+                    val authorizationHeader = call.request.headers["Authorization"]!!
+                    val userId = userService.getUserId(authorizationHeader)
+                    call.respond(articleUsecase.toggleFavorite(slug, userId).convertToArticleResponse())
+                }
+            }
         }
     }
 
-//
-//    @RequestMapping("/{slug}/favorite", method = [RequestMethod.POST])
-//    fun addFavorite(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
-//        val userId = userService.getUserId(authorizationHeader)
-//        return ResponseEntity.ok(articleUsecase.toggleFavorite(userId, slug).convertToArticleResponse())
-//    }
-//
-//    @RequestMapping("/{slug}/favorite", method = [RequestMethod.DELETE])
-//    fun unfavorite(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
-//        val userId = userService.getUserId(authorizationHeader)
-//        return ResponseEntity.ok(articleUsecase.toggleFavorite(userId, slug).convertToArticleResponse())
-//    }
 //
 //    @RequestMapping("/{slug}", method = [RequestMethod.DELETE])
 //    fun deleteArticle(@PathVariable("slug") slug: String) {
