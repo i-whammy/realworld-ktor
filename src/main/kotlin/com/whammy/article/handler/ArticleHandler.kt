@@ -31,7 +31,7 @@ fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserServic
 
         route("/{slug}") {
             put("/") {
-                val request = call.receive<ArticleRequest>()
+                val request = call.receive<UpdateArticleRequest>()
                 val slug = call.parameters["slug"]!!
                 val authorizationHeader = call.request.headers["Authorization"]!!
                 val userId = userService.getUserId(authorizationHeader)
@@ -44,22 +44,24 @@ fun Route.articleHandler(articleUsecase: ArticleUsecase, userService: UserServic
                 val slug = call.parameters["slug"]!!
                 call.respond(articleUsecase.getArticle(slug).convertToArticleResponse())
             }
+
+            route("/comments") {
+                get("/") {
+                    val slug = call.parameters["slug"]!!
+                    call.respond(articleUsecase.getCommentsOfArticle(slug).map { it.convertToCommentResponse() }.let { CommentsResponse(it) })
+                }
+
+                post("/") {
+                    val request = call.receive<CommentRequest>()
+                    val slug = call.parameters["slug"]!!
+                    val authorizationHeader = call.request.headers["Authorization"]!!
+                    val userId = userService.getUserId(authorizationHeader)
+                    call.respond(articleUsecase.addComment(userId, slug, request.body).convertToCommentResponse())
+                }
+            }
         }
     }
 
-
-//
-//    @RequestMapping("/{slug}/comments", method = [RequestMethod.GET])
-//    fun getComments(@PathVariable("slug") slug: String): ResponseEntity<CommentsResponse> {
-//        return ResponseEntity.ok(
-//            articleUsecase.getCommentsOfArticle(slug).map { it.convertToCommentResponse() }.let { CommentsResponse(it) })
-//    }
-//
-//    @RequestMapping("/{slug}/comments", method = [RequestMethod.POST])
-//    fun postComment(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable("slug") slug:String, @RequestBody comment: CommentRequest) : ResponseEntity<CommentResponse> {
-//        val userId = userService.getUserId(authorizationHeader)
-//        return ResponseEntity.ok(articleUsecase.addComment(userId, slug, comment.body).convertToCommentResponse())
-//    }
 //
 //    @RequestMapping("/{slug}/favorite", method = [RequestMethod.POST])
 //    fun addFavorite(@RequestHeader("Authorization", required = true) authorizationHeader: String, @PathVariable("slug") slug: String) : ResponseEntity<ArticleResponse> {
@@ -88,13 +90,11 @@ private fun Comment.convertToCommentResponse(): CommentResponse {
     return CommentResponse(id, body, createdAt, updatedAt)
 }
 
-@JsonRootName("article")
 data class ArticleRequest(
-    @JsonProperty("title", required = true) val title: String,
-    @JsonProperty("body", required = true) val body: String
+    val title: String,
+    val body: String
 )
 
-@JsonRootName("article")
 data class UpdateArticleRequest(
     @JsonProperty("title") val title: String,
     @JsonProperty("body") val body: String
